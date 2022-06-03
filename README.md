@@ -6,7 +6,7 @@
 
 ## Why Git & Github?
 
-![img](TIL_Day_01.assets/168756716-68f9aebb-380f-4897-8141-78d8403f6113.png)
+![Git로고](README.assets/168756716-68f9aebb-380f-4897-8141-78d8403f6113-20220603175936081.png)
 
 
 
@@ -251,7 +251,7 @@ $ rm -r test
 ```bash
 #git 지정하기
 git-practice % git init
-Initialized empty Git repository in /Users/youngrong/git-practice/.git/
+Initialized empty Git repository in /Users/git-practice/.git/
 
 #a.txt 파일 만들기
 git-practice % touch a.txt
@@ -274,18 +274,18 @@ git-practice % git commit -m "first commit"
  create mode 100644 a.txt
 
 #git에 config 등록하기(첫 커밋 후 사용자 질문함)
-git-practice % git config --global user.name "brightgemm"
-git-practice % git config --global user.email "dudfhd0107@g.skku.edu"
+git-practice % git config --global user.name "username"
+git-practice % git config --global user.email "user@email"
 
 #config에 등록한 정보 확인
 git-practice % git config --global --list 
-user.name=brightgemm
-user.email=dudfhd0107@g.skku.edu
+user.name=username
+user.email=user@email
 
 #git 로그 확인하기
 git-practice % git log
 commit 2f2c2dfd1d71baf3231c354a5e64695f3f75553b (HEAD -> master)
-Author: 문영롱 [youngrong@mun-yeonglong-ui-MacBookPro.local](<mailto:youngrong@mun-yeonglong-ui-MacBookPro.local>)
+Author: user [user-ui-MacBookPro.local](<mailto:user-ui-MacBookPro.local>)
 Date:   Thu Jun 2 15:09:23 2022 +0900
 first commit
 
@@ -316,12 +316,12 @@ b18dc0b (HEAD -> master) second commit
 2f2c2df first commit
 
 #github에 연결하기
-git-practice % git remote add origin <https://github.com/brightgemm/git-practice.git%>
+git-practice % git remote add origin <https://github.com/username/git-practice.git%>
 
 #연결 확인하기
 git-practice % git remote -v
-origin  <https://github.com/brightgemm/git-practice.git> (fetch)
-origin  <https://github.com/brightgemm/git-practice.git> (push)
+origin  <https://github.com/username/git-practice.git> (fetch)
+origin  <https://github.com/username/git-practice.git> (push)
 
 #github에 올리기
 git-practice % git push origin master
@@ -385,46 +385,355 @@ git-practice % git commit -m "solve 5 problem"
   - ***git remote add origin URL***
 
   ```bash
-  % git remote add origin <https://github.com/brightgemm/git-practice.git%>
+  % git remote add origin <https://github.com/username/git-practice.git%>
   ```
 
   - ***git remote -v*** : remote 된 것 확인하기
 
   ```bash
-  % git remote add origin <https://github.com/brightgemm/git-practice.git%>
+  % git remote add origin <https://github.com/username/git-practice.git%>
   
   % git remote -v
-  origin  <https://github.com/brightgemm/git-practice.git> (fetch)
-  origin  <https://github.com/brightgemm/git-practice.git> (push)
+  origin  <https://github.com/username/git-practice.git> (fetch)
+  origin  <https://github.com/username/git-practice.git> (push)
   ```
 
   - ***git remove rm origin*** 으로 삭제 가능
 
 - ***git push*** : github에 local commits 올리기
 
-
+  
 
 ### Remote 연결 실습
 
-(github)
+***(github)***
 
-1. TIL 레포지토리를 만든다
-2. URL 을 복사한다.
+1. TIL 레포지토리를 만들고 URL 을 복사
 
-(local)
+***(local)***
 
 1. TIL 레포지토리를 만든다 (TIL 폴더 만든 후, git init)
 2. README.md 파일을 만든다.
-3. 편집 후,
-   add -> commit으로 변경사항을 기록한다
+3. 편집 후 add -> commit으로 변경사항을 기록한다
 
-(remote와 local 길 연결)
+***(remote와 local 길 연결)***
 
 1. git remote add origin URL
 2. git remote -v
 
-(local에서 remote로 변경 사항 올리기)
+***(local에서 remote로 변경 사항 올리기)***
 git push origin master
 
-* 주의 : URL은 .git으로 끝나야 함 
-  origin의 오타주의
+```bash
+#README.md 생성 및 내용 작성 후 커밋
+TIL % git init
+TIL % touch README.md
+TIL % git add .
+TIL % git commit -m "README"
+
+#repository 연결 후 push하기
+TIL % git remote add origin https://github.com/username/TIL.git
+TIL % git remote -v
+origin  https://github.com/username/TIL.git (fetch)
+origin  https://github.com/username/TIL.git (push)
+TIL % git push origin master
+
+```
+
+
+
+---
+
+### Github 연결(하향식)
+
+**1. git clone**
+
+- 이미 git 레포지토리로 설정된 폴더에 clone을 받지 않도록 주의!
+- git clone origin URL
+- 초기 설정을 하지 않아도 원본 레포지토리의 설정을 그대로 따라감
+
+**2. git pull**
+
+- 로컬1 (push)→ remote →(pull) 로컬2
+
+- git pull을 안하고 작업 후 push 했을 때 충돌!
+
+  → 사용자에게 덮어쓸지 다시 pull하고 작업할 지 선택권을 줌
+
+- 충돌된 파일 중 하나 선택 / 두 가지 내용 모두 합쳐서 저장 / 그냥 다른 내용으로 편집하기
+
+
+
+### clone 실습
+
+```bash
+#터미널에서 clone 설치하기
+desktop % git clone <https://github.com/username/clone_practice.git>
+Cloning into 'clone_practice'...
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+Receiving objects: 100% (3/3), done.
+
+#vscode에서 local 커밋 후 push
+clone_practice % git add .
+clone_practice % git commit -m "local 1"
+[master 671faee] local 1
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+clone_practice % git push origin master
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Writing objects: 100% (3/3), 275 bytes | 275.00 KiB/s, done.
+Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+To <https://github.com/username/clone_practice.git>
+   1d6d64f..671faee  master -> master
+
+#remote(clone_practice)레포지토리에서 수정 후 local에 pull하기
+clone_practice % git pull origin master
+...
+Unpacking objects: 100% (6/6), 1.29 KiB | 263.00 KiB/s, done.
+From <https://github.com/username/clone_practice>
+ * branch            master     -> FETCH_HEAD
+   671faee..e50ae40  master     -> origin/master
+Updating 671faee..e50ae40
+Fast-forward
+ README.md | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+#local에서 내용 추가 후 커밋하기
+clone_practice % git add .
+clone_practice % git commit -m "local 2"
+[master 3c87616] local 2
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+#local 2까지 커밋한 상태
+clone_practice % git log --oneline
+3c87616 (HEAD -> master) local 2
+e50ae40 (origin/master, origin/HEAD) Update README.md
+6b1db1c Update README.md
+671faee local 1
+1d6d64f Initial commit
+
+#origin.master보다 한 단계 더 앞선 상태(=local에서 내용 수정 됨)
+clone_practice % git status
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+
+#remote(clone_practice)레포지토리에 push/pull 안 한 상태로 수정
+
+#local에서 local2 커밋 push 시도 -> rejected 발생
+clone_practice % git push origin master
+To <https://github.com/username/clone_practice.git>
+ ! [rejected]        master -> master (fetch first)
+error: failed to push some refs to '<https://github.com/username/clone_practice.git>'
+hint: Updates were rejected because the remote contains work that you do
+hint: not have locally. This is usually caused by another repository pushing
+hint: to the same ref. You may want to first integrate the remote changes
+hint: (e.g., 'git pull ...') before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+
+#오류 해결하기 위해 pull
+clone_practice % git pull origin master
+hint: ...
+remote: ...
+Unpacking objects: 100% (3/3), 670 bytes | 223.00 KiB/s, done.
+From <https://github.com/username/clone_practice>
+ * branch            master     -> FETCH_HEAD
+   e50ae40..ccdd6a8  master     -> origin/master
+Auto-merging README.md
+CONFLICT (content): Merge conflict in README.md
+Automatic merge failed; fix conflicts and then commit the result.
+
+#merging단계에서 수정사항 저장 후 commit하기 (master|MERGING) -> (master)
+clone_practice % git add .
+clone_practice % git commit -m "fix conflict"
+[master 32171fc] fix conflict
+
+clone_practice % git log --oneline
+32171fc (HEAD -> master) fix conflict
+ccdd6a8 (origin/master, origin/HEAD) Update README.md
+3c87616 local 2
+e50ae40 Update README.md
+6b1db1c Update README.md
+671faee local 1
+1d6d64f Initial commit
+```
+
+
+
+## git 버전관리
+
+**git 버전 관리하지 않아도 되는 파일**
+
+- 비밀번호, AWS 토큰 → 민감정보
+
+- 운영체제, 언어에 따라 생성되는 파일
+
+
+
+**.gitignore 파일** : 이 안에 작성하면 버전관리하지 않음
+
+- git에서 한 번 staging area에 올라갔던 내용은 .gitignore에 아무리 추가해도 제외되지 않음
+- 따라서 add하기 전에 .gitignore에 넣어줘야함!
+- [gitignore](https://www.toptal.com/developers/gitignore/) 사이트
+
+
+
+
+
+## Branch
+
+> 버전 관리의 꽃. “협업”
+
+- branch = 나뭇가지
+
+- 목적: 이전 commit들을 가진 독립적인 공간에서 master 브랜치에 영향없이 작업할 수 있도록 함
+
+- branch 실습
+
+  1. ***git branch*** : 브랜치 목록 확인
+  2. ***git branch 브랜치명*** : 브랜치 생성
+  3. ***git switch 브랜치명*** : 브랜치 이동
+     - switch 후 다시 git branch 하면 *표시가 있는 곳이 작업하고 있는 브랜치
+  4. ***git switch -c 브랜치명*** : 브랜치 생성과 동시에 이동
+  5. ***git branch -d 브랜치명*** : 마스터 브랜치에 병합된 브랜치 삭제
+  6. ***git branch -D 브랜치명*** : 마스터 브랜치에 병합하지 않은 상태에서 삭제
+
+  ```bash
+  #git 시작 후 test.txt 파일 만들기
+  git-branch-practice % git init
+  Initialized empty Git repository in /Users/user/Git특강/git-branch-practice/.git/
+  git-branch-practice % touch test.txt
+  
+  #test.txt에 master-1, master-2, master-3 각각 커밋 남기기
+  git-branch-practice % git add .
+  git-branch-practice % git commit -m "master-1"
+  git-branch-practice % git add .
+  git-branch-practice % git commit -m "master-2"
+  git-branch-practice % git add . 
+  git-branch-practice % git commit -m "master-3"
+  
+  #변경사항 확인하기 - 3커밋
+  git-branch-practice % git log --oneline
+  16e95e3 (HEAD -> master) master-3
+  60dc77c master-2
+  1cd9153 master-1
+  
+  #login 브랜치 만들고 브랜치 목록 확인
+  git-branch-practice % git branch login
+  git-branch-practice % git branch
+    login
+  * master
+  
+  #master 브랜치에서 master-4 작성 후 커밋하기
+  git-branch-practice % git add .
+  git-branch-practice % git commit -m "master-4"
+  
+  #login 브랜치로 이동 후 test_login.txt 만들고 login-1 커밋 생성
+  git-branch-practice % git switch login
+  Switched to branch 'login'
+  
+  git-branch-practice % touch test_login.txt
+  git-branch-practice % git add .
+  git-branch-practice % git commit -m "login-1"
+  
+  #master 브랜치로 이동 후 작업 내용 확인
+  git-branch-practice % git switch master
+  Switched to branch 'master'
+  
+  git-branch-practice % git log --oneline --all --graph
+  * 53dc93b (login) login-1
+  | * a99b857 (HEAD -> master) master-4
+  |/  
+  * 16e95e3 master-3
+  * 60dc77c master-2
+  * 1cd9153 master-1
+  
+  #master 브랜치에서 login 브랜치 병합하기 - 충돌발생!
+  git-branch-practice % git merge login
+  Auto-merging test.txt
+  CONFLICT (content): Merge conflict in test.txt
+  Automatic merge failed; fix conflicts and then commit the result.
+  
+  #충돌 내용 수정 후 커밋하기
+  git-branch-practice % git add .
+  git-branch-practice % git commit -m "fix conflict"
+  [master a8e4f62] fix conflict
+  (base) user-ui-MacBookPro git-branch-practice % git log --oneline --all --graph
+  *   a8e4f62 (HEAD -> master) fix conflict
+  |\\  
+  | * 53dc93b (login) login-1
+  * | a99b857 master-4
+  |/  
+  * 16e95e3 master-3
+  * 60dc77c master-2
+  * 1cd9153 master-1
+  
+  #login 브랜치 삭제하기
+  git-branch-practice % git branch -d login
+  Deleted branch login (was 53dc93b).
+  ```
+
+
+
+## Git Workflow
+
+1. **Feature Branch Workflow** (저장소의 소유권이 **있는** 경우)
+
+   - 기능 추가를 위해 각각 branch 생성 및 기능 구현
+
+     - 예) A - login, B - signup , C - profile
+
+   - 각각의 기능 구현 후 원격 저장소에 브랜치 반영
+
+     - 예) A - git push origin login
+
+   - 병합 후 병합 완료된 브랜치 삭제 → github 상에서의 master에는 각 기능이 모두 반영됨
+
+   - 병합된 master의 내용을 다시 pull 해서 이후 작업을 진행함
+
+   - 새로운 기능 추가를 위해 branch 생성 및 과정 반복
+
+     
+
+2. **Forking Workflow** (저장소의 소유권이 **없는** 경우)
+
+   - 소유권이 없는 원격 저장소를 fork를 통해 복제
+   - 복제해온 내용을 clone으로 복제
+     - 이 때 추후 로컬 저장소를 원본 원격 저장소와 동기화하기 위해 원본 URL 연결
+     - git remote add upstream 원본 URL
+   - 기능 추가를 위해 branch 생성 및 기능 구현
+   - 기능 구현 후 원격 저장소에 브랜치 반영(이때 원본이 아닌 복제(origin)로 보냄)
+     - git push origin login
+     - push 할 때 origin master 하지 말자! 브랜치로 올리면 pr(협업) 경험이 있다는 것을 증명 가능
+   - origin에서 upstream으로 pull request
+   - push는 origin, pull 은 master로!
+
+
+
+### Forking Workflow 실습
+
+```bash
+#원본 저장소에서 fork 해서 clone 다운로드
+#clone 폴더에서 작업
+dse1516-acrostic-poem % git branch username
+dse1516-acrostic-poem % git switch username
+
+#이름으로 브랜치 생성해서 4행시 작성 후 username 브랜치로 푸시
+dse1516-acrostic-poem % git add .
+dse1516-acrostic-poem % git commit -m "n poem"
+dse1516-acrostic-poem % git push origin username
+
+#github에서 원본 저장소로 pull request
+
+#원본저장소에서 merge 해주면 local에서 pull URL 연결 후 pull하기
+dse1516-acrostic-poem % git remote add upstream 원본URL
+dse1516-acrostic-poem % git pull origin master
+```
+
+
+
