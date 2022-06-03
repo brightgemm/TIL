@@ -6,7 +6,7 @@
 
 ## Why Git & Github?
 
-![Git로고](README.assets/168756716-68f9aebb-380f-4897-8141-78d8403f6113-20220603175936081.png)
+![Git로고](https://user-images.githubusercontent.com/49775540/168756716-68f9aebb-380f-4897-8141-78d8403f6113.png)
 
 
 
@@ -444,13 +444,27 @@ TIL % git push origin master
 
 ---
 
+
+
+# TIL Day 02
+
+> 2022년 06월 03일 금요일
+
+
+
+
+
 ### Github 연결(하향식)
 
 **1. git clone**
 
 - 이미 git 레포지토리로 설정된 폴더에 clone을 받지 않도록 주의!
+
 - git clone origin URL
+
 - 초기 설정을 하지 않아도 원본 레포지토리의 설정을 그대로 따라감
+
+     
 
 **2. git pull**
 
@@ -462,7 +476,7 @@ TIL % git push origin master
 
 - 충돌된 파일 중 하나 선택 / 두 가지 내용 모두 합쳐서 저장 / 그냥 다른 내용으로 편집하기
 
-
+​     
 
 ### clone 실습
 
@@ -563,7 +577,7 @@ e50ae40 Update README.md
 1d6d64f Initial commit
 ```
 
-
+​    
 
 ## git 버전관리
 
@@ -573,7 +587,7 @@ e50ae40 Update README.md
 
 - 운영체제, 언어에 따라 생성되는 파일
 
-
+​    
 
 **.gitignore 파일** : 이 안에 작성하면 버전관리하지 않음
 
@@ -583,7 +597,9 @@ e50ae40 Update README.md
 
 
 
+   
 
+   
 
 ## Branch
 
@@ -678,7 +694,7 @@ e50ae40 Update README.md
   Deleted branch login (was 53dc93b).
   ```
 
-
+​    
 
 ## Git Workflow
 
@@ -698,7 +714,7 @@ e50ae40 Update README.md
 
    - 새로운 기능 추가를 위해 branch 생성 및 과정 반복
 
-     
+     ​    
 
 2. **Forking Workflow** (저장소의 소유권이 **없는** 경우)
 
@@ -713,7 +729,7 @@ e50ae40 Update README.md
    - origin에서 upstream으로 pull request
    - push는 origin, pull 은 master로!
 
-
+​    
 
 ### Forking Workflow 실습
 
@@ -734,6 +750,4 @@ dse1516-acrostic-poem % git push origin username
 dse1516-acrostic-poem % git remote add upstream 원본URL
 dse1516-acrostic-poem % git pull origin master
 ```
-
-
 
