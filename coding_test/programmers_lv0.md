@@ -167,3 +167,65 @@
 
   
 
+### Day3 사칙연산, 배열, 수학
+
+- 나머지 구하기
+
+  ```python
+  def solution(num1, num2):
+      return num1 % num2
+  ```
+
+  
+
+- 중앙값 구하기
+
+  ```python
+  def solution(array):
+      array = sorted(array)
+      median = int(len(array)/2)
+      return array[median]
+  ```
+
+  
+
+- 최빈값 구하기
+
+  ```python
+  ## Mine
+  def solution(array):
+      answer = 0
+      count_dict = {}
+      for n in set(array):
+          count_dict[n] = array.count(n)
+  		
+      # 빈도수 최댓값 구하기
+      max_count = max(list(count_dict.values()))
+      
+      # 최빈값의 key값 가져오기
+      max_key = [k for k, v in count_dict.items() if v == max_count] 
+      
+  		if len(max_key) > 1: # 최빈값 여러 개일 때
+          return -1
+      else:
+  		    return max_key[0] # 최빈값이 한 개일 때
+  ```
+
+  
+
+- 짝수는 싫어요
+
+  ```python
+  def solution(n):
+      answer = []
+      for i in range(n+1):
+          if i%2 != 0:
+              answer.append(i)
+      return answer
+    
+  # 더 간단한 코드(리스트내포)
+  def solution(n):
+    return [x for x in range(n+1) if x%2 != 0]
+  ```
+
+  
