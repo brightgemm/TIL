@@ -63,8 +63,6 @@ def solution(num1, num2):
     return 1 if num1 == num2 else -1
 ```
 
-
-
 #### 분수의 덧셈
 
 ```python
@@ -176,8 +174,6 @@ def solution(num1, num2):
     return num1 % num2
 ```
 
-
-
 #### 중앙값 구하기
 
 ```python
@@ -186,8 +182,6 @@ def solution(array):
     median = int(len(array)/2)
     return array[median]
 ```
-
-
 
 #### 최빈값 구하기
 
@@ -210,8 +204,6 @@ def solution(array):
     else:
 		    return max_key[0] # 최빈값이 한 개일 때
 ```
-
-
 
 #### 짝수는 싫어요
 
@@ -247,8 +239,6 @@ def solution(n):
   return n//7 if n%7 == 0 else n//7+1
 ```
 
-
-
 #### 피자 나눠 먹기(2)
 
 ```python
@@ -269,16 +259,12 @@ def solution(n):
     return n//gcd(n, 6)
 ```
 
-
-
 #### 피자 나눠 먹기(3)
 
 ```python
 def solution(slice, n):
     return n//slice if n%slice == 0 else n//slice + 1
 ```
-
-
 
 #### 배열의 평균값
 
@@ -290,3 +276,57 @@ def solution(numbers):
 
 
 
+### Day5
+
+#### 옷가게 할인 받기
+
+```python
+def solution(price):
+    if price >= 500000:
+        price = int(price*0.8)
+    elif 300000<= price < 500000:
+        price = int(price*0.9)
+    elif price >= 100000:
+        price = int(price*0.95)
+    return price
+```
+
+#### 아이스 아메리카노
+
+```python
+def solution(money):
+    num = money//5500
+    change = money%5500
+    return [num, change]
+```
+
+#### 나이 출력
+
+```python
+def solution(age):
+    return 2022-age+1
+```
+
+#### 배열 뒤집기
+
+- [Extended Slices](https://docs.python.org/release/2.3.5/whatsnew/section-slices.html)
+
+```python
+## Mine
+def solution(num_list):
+    num_list.reverse()
+    return num_list
+  
+## Others
+# array[::] 슬라이싱 용법 활용하기!
+# arr[a:b:c] = 인덱스 a부터 b까지 c 간격으로
+def solution(num_list):
+  return num_list[::-1]
+
+## Extended Slices 활용 예시
+arr = [1,2,3,4,5]
+arr[::-1]  # 처음부터 끝까지 -1간격
+>>> [5,4,3,2,1]
+arr[3:5:-1]  # 인덱스 3부터 5미만까지 -1간격
+>>> [4,5]
+```
