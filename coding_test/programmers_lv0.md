@@ -330,3 +330,81 @@ arr[::-1]  # 처음부터 끝까지 -1간격
 arr[3:5:-1]  # 인덱스 3부터 5미만까지 -1간격
 >>> [4,5]
 ```
+
+​    
+
+### Day6
+
+#### 문자열 뒤집기
+
+```python
+# extended slices 활용
+def solution(my_string):
+    return my_string[::-1]
+
+# 반복문을 사용하여 빈 문자열에 덧붙이기
+def solution(my_string):
+    r_string = ''
+    for char in my_string:
+        r_string = char + r_string
+    return r_string
+  
+# reversed() -> 문자열에도 사용 가능!
+def solution(my_string):
+    my_string = ''.join(reversed(my_string))
+    return my_string
+
+# string.join(iterable)
+# string method - join() 활용예시
+myList = ['John', 'Peter', 'Vicky']
+x = 'and'.join(myList)
+print(x)
+>>> JohnandPeterandVicky
+
+```
+
+#### 직각삼각형 출력하기
+
+```python
+n = int(input())
+for i in range(1, n+1):
+    print('*'*i)   # end="\n" 생략된 형태
+```
+
+#### 짝수 홀수 개수
+
+```python
+## Mine
+def solution(num_list):
+    even = [k for k in num_list if k%2==0]
+    odd = [k for k in num_list if k%2!=0]
+    return [len(even), len(odd)]
+  
+## Others
+# for문을 통해 개수를 카운팅하기
+def solution(num_list):
+		even, odd = 0, 0
+    for num in num_list:
+      	if num%2 == 0:
+          	even += 1
+        else:
+          	odd += 1
+		return [even, odd]
+```
+
+#### 문자 반복 출력하기
+
+```python
+## Mine
+def solution(my_string, n):
+    answer = ''
+    for char in my_string:
+        answer += char*n
+    return answer
+
+## Others
+# join 함수 + 리스트내포
+def solution(my_string, n):
+		return ''.join([x*n for x in my_string])  
+```
+
