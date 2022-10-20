@@ -276,7 +276,7 @@ def solution(numbers):
 
 
 
-### Day5
+### Day5 수학, 배열
 
 #### 옷가게 할인 받기
 
@@ -333,7 +333,7 @@ arr[3:5:-1]  # 인덱스 3부터 5미만까지 -1간격
 
 ​    
 
-### Day6
+### Day6 문자열, 반복문, 출력, 배열, 조건문
 
 #### 문자열 뒤집기
 
@@ -406,5 +406,54 @@ def solution(my_string, n):
 # join 함수 + 리스트내포
 def solution(my_string, n):
 		return ''.join([x*n for x in my_string])  
+```
+
+​    
+
+### Day7 문자열, 조건문, 수학, 반복문
+
+#### 특정 문자 제거하기
+
+```python
+def solution(my_string, letter):
+    answer = my_string.replace(letter,'')
+    return answer
+```
+
+#### 각도기
+
+```python
+def solution(angle):
+    if angle < 90: 
+        return 1
+    elif angle == 90: 
+        return 2
+    elif 90 < angle < 180:
+        return 3
+    else:
+        return 4
+```
+
+#### 양꼬치
+
+```python
+def solution(n, k):
+    return 12000*n + 2000*(k-n//10)
+```
+
+#### 짝수의 합
+
+```python
+## Mine
+def solution(n):
+    answer = 0
+    for i in range(n+1):
+        if i%2 == 0:
+            answer += i
+    return answer
+
+## Others
+def solution(n):
+  return sum([k for k in range(2, n+1, 2)])
 ```
 
