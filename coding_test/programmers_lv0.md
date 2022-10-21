@@ -457,3 +457,72 @@ def solution(n):
   return sum([k for k in range(2, n+1, 2)])
 ```
 
+​    
+
+### Day8 배열, 구현, 수학
+
+#### 배열 자르기
+
+```python
+def solution(numbers, num1, num2):
+    return numbers[num1:num2+1]
+```
+
+#### 외계행성의 나이
+
+```python
+## Mine
+def solution(age):
+    char = 'abcdefghij'
+    age = list(str(age))
+    answer=''
+    for i in range(len(age)):
+        answer += char[int(age[i])]
+    return answer
+
+## Others
+# join 활용 + string은 iterable!, callable!
+def solution(age):
+  char = 'abcdefghij'
+  return ''.join([char[int(i)] for i in str(age)])
+```
+
+#### 진료 순서 정하기
+
+```python
+## Mine
+def solution(emergency):
+    sort_list = sorted(emergency, reverse=True)  #내림차순 정렬
+    my_dict = {}
+    my_turn = []
+    for i, e in enumerate(sort_list)  #{내림차순: 순서} 생성
+        my_dict[e]=i+1
+    for num in emergency:
+        my_turn.append(my_dict.get(num))  #원본 숫자를 key로 갖는 value 호출하여 리스트에 추가
+    return my_turn
+  
+## Others
+# 리스트의 인덱스 활용하기
+def solution(emergency):
+    sort_em = sorted(emergency, reverse=True)
+    return [sort_em.index(i)+1 for i in emergency]
+```
+
+#### 순서쌍의 개수
+
+```python
+def solution(n):
+    # 약수의 개수
+    num_list = [k for k in range(1, n+1) if n%k==0]
+    return len(num_list)
+  
+## Others
+def solution(n):
+  	# 제곱수인 경우는 개수-1 (앞뒤 순서 바뀐 경우가 없음!)
+    answer = -1 if n**0.5 == int(n**0.5) else 0
+    for i in range(1, int(n**0.5) + 1):  #1~순서쌍 절반까지만 확인
+        if n%i == 0:
+            answer += 2  #순서쌍이므로 2개씩 추가하기
+    return answer
+```
+
