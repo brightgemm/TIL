@@ -526,3 +526,112 @@ def solution(n):
     return answer
 ```
 
+​    
+
+### Day9 수학, 문자열, 해시, 완전탐색, 조건문
+
+#### 개미군단
+
+```python
+def solution(hp):
+    return hp//5 + hp%5//3 + hp%5%3
+```
+
+#### 모스부호
+
+```python
+def solution(letter):
+    morse = { 
+    '.-':'a','-...':'b','-.-.':'c','-..':'d','.':'e','..-.':'f',
+    '--.':'g','....':'h','..':'i','.---':'j','-.-':'k','.-..':'l',
+    '--':'m','-.':'n','---':'o','.--.':'p','--.-':'q','.-.':'r',
+    '...':'s','-':'t','..-':'u','...-':'v','.--':'w','-..-':'x',
+    '-.--':'y','--..':'z'
+    }
+    answer = ''
+    for char in letter.split():
+        answer += morse.get(char)
+    return answer
+
+# join 활용하기
+def solution(letter):
+		morse = { ... }
+    return ''.join([morse[i] for i in letter.split()])
+
+```
+
+#### 가위바위보
+
+- [map()](https://www.w3schools.com/python/ref_func_map.asp)
+
+```python
+## Mine
+def solution(rsp):
+    rsp_dict = {'2': '0', '0': '5', '5': '2'}
+    return ''.join([rsp_dict.get(x) for x in rsp])
+
+## Others
+# map과 lambda 함수 이용하기!
+def solution(rsp):
+  	return ''.join(map(lambda x : '5' if x=='0' else '0' if x=='2' else '2', rsp))
+
+  
+# map(function, iterables): map(함수 적용된 iterable객체)
+# map함수 실행 시 map object로 반환되기 때문에 여러 개의 결과값을 한번에 보기 위해서는 list(map())과 같이 리스트화 시키는 것이 일반적!
+# map 활용 예시
+def myfunc(a, b):
+  return a + b
+
+x = map(myfunc, ('apple', 'banana', 'cherry'), ('orange', 'lemon', 'pineapple'))
+
+print(x)
+>>> <map object at 0x147397f3b2b0>
+
+print(list(x))
+>>> ['appleorange', 'bananalemon', 'cherrypineapple']
+```
+
+#### 구슬을 나누는 경우의 수
+
+```python
+## Mine
+# for문을 이용하여 각각 팩토리얼 적용
+def solution(balls, share):
+    n, m, overlap = 1, 1, 1
+    for i in range(balls, 1, -1):
+        n *= i
+    for i in range(balls-share, 1, -1):
+        overlap *= i
+    for i in range(share, 1, -1):
+        m *= i
+    return int(n/(overlap*m))
+
+# math-factorial 함수 사용
+def solution(balls, share):
+	return f(balls)/(f(balls-share)*f(share))
+
+# factorial 함수 정의
+def factorial(num): 
+    result = 1
+    for i in range(num,1,-1):
+        result *= i
+    return result
+
+def solution(balls, share):
+    return factorial(balls)/(factorial(balls-share)*factorial(share))
+  
+## Others
+# factorial 정의하는 방법2: 재귀함수 활용하기
+def factorial(n):
+  	return 1 if n==1 or n==0 else n*factorial(n-1)
+  
+# n!/(n-m)!*m! = (n-(n-m)(!/m!
+# Ex. 5C3 = 5*4*3/3!
+def solution(balls, share):
+    denom, numer = 1, 1
+    for i in range(balls, balls-share, -1):
+        denom *= i
+    for i in range(share, 1, -1):
+        numer *= i
+    return denom/numer
+```
