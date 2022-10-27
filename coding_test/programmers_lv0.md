@@ -635,3 +635,237 @@ def solution(balls, share):
         numer *= i
     return denom/numer
 ```
+
+​     
+
+### Day10 조건문, 배열, 수학, 시뮬레이션
+
+#### 점의 위치 구하기
+
+```python
+def solution(dot):
+    x, y = dot[0], dot[1]
+    if x>0 and y>0:
+        return 1
+    elif x<0 and y>0:
+        return 2
+    elif x<0 and y<0:
+        return 3
+    else:
+        return 4
+```
+
+#### 2차원으로 만들기
+
+```python
+def solution(num_list, n):
+    answer = []
+    for i in range(0, len(num_list), n):
+        answer.append(num_list[i:i+n])
+    return answer
+```
+
+#### 공 던지기
+
+```python
+def solution(numbers, k):
+    return numbers[(k*2-2)%len(numbers)]
+```
+
+#### 배열 회전시키기
+
+```python
+# 방법1
+def solution(numbers, direction):
+    if direction == 'right':
+        return [numbers.pop(-1)] + numbers
+    else:
+        return numbers + [numbers.pop(0)]
+
+# 방법2
+def solution(numbers, direction):
+    return [numbers[-1]] + numbers[0:-1] if direction=='right' else numbers[1:] + [numbers[0]]
+```
+
+​    
+
+### Day11 수학, 반복문
+
+#### 주사위의 개수
+
+```python
+def solution(box, n):
+    return (box[0]//n)*(box[1]//n)*(box[2]//n)
+```
+
+#### 합성수 찾기
+
+```python
+## Mine
+def count_div(n):  # 1과 자기자신 외의 약수 개수 세기
+    count = 0
+    for i in range(2,n):
+        if n%i == 0:
+            count += 1
+    return count
+
+def solution(n):
+    answer = 0
+    for i in range(n+1):
+        if count_div(i) >= 1:
+            answer += 1
+    return answer
+
+## Others
+def solution(n):
+    answer = 0
+    for num in range(4, n+1):  # 최소 합성수 4부터 n까지
+        for i in range(2, int(num**0.5)+1):  # 2부터 n제곱근까지
+            if num % i == 0:
+                answer += 1
+                break
+    return answer
+```
+
+#### 최댓값 만들기(1)
+
+```python
+def solution(numbers):
+    numbers = sorted(numbers)
+    return numbers[-1] * numbers[-2]
+```
+
+#### 팩토리얼
+
+```python
+## Mine
+def factorial(n):
+    return 1 if n==0 or n==1 else n*factorial(n-1)
+
+def solution(n):
+    for i in range(1, 11):  # 문제 조건에서 n<= 10!이었으므로 최대 11까지
+        if factorial(i) > n:
+            max = i-1
+            break
+        elif factorial(i) == n:
+            max = i
+            break
+        else:
+            continue
+    return max
+  
+## Others
+# 방법1
+def solution(n):
+    for i in range(1, 12):
+        if n//factorial(i) < 1:  # n보다 큰 팩토리얼이 되면
+            return i-1
+          
+def factorial(n):
+    return 1 if n==1 or n==0 else n*factorial(n-1)
+  
+# 방법2
+def solution(n):
+    cnt, k = 1, 1
+    while cnt <= n:  # n보다 작은 최대 팩토리얼값 찾기. cnt=k!
+        cnt *= k
+        k += 1
+    return k-2  # k+=1이 반복문 안에 있기 때문에 -2를 해줘야 최댓값 반환
+```
+
+​     
+
+### Day12 문자열, 정렬, 사칙연산, 수학
+
+#### 모음 제거하기
+
+```python
+## Mine
+# 방법1
+import re
+def solution(my_string):
+    return re.sub('[aeiou]','', my_string)
+
+# 방법2
+def solution(my_string):
+    for char in 'aeiou':
+        my_string = my_string.replace(char, '')
+    return my_string
+  
+
+## Others
+# list.remove()함수 사용
+def solution(my_string):
+  	my_string = list(my_string)
+  	for vowel in my_string:
+      	my_string.remove(vowel)
+    return ''.join(my_string)
+  
+```
+
+#### 문자열 정렬하기 (1)
+
+- string 함수: `isdemical()` vs `isdigit()` vs `isnumeric()`
+  - `isdigit()`: 단일 글자가 숫자 모양이면 `True`
+  - `isdemical()`: int형으로 변환이 가능하면 `True` -> 숫자로 된 특수문자는 `False`
+  - `isnumeric()`: 숫자값 표현에 해당하는 문자열까지 `True` ->	제곱근, 분수, 거듭제곱 `True`
+
+```python
+## Mine
+import re
+def solution(my_string):
+    y_num = list(re.sub('[a-z]','',my_string))  #[^0-9]와 동일
+    return sorted(list(map(int, my_num)))
+  
+  
+##Others
+# filter(function, iterable)+isdigit() 함수 이용
+# isdemical() vs isdigit() vs isnumeric()
+def solution(my_string):
+  	# 숫자인 것만 필터링 -> int로 변환 -> 정렬
+  	return sorted([int(k) for k in filter(lambda x: x.isdigit(), my_string)])
+```
+
+#### 숨어있는 숫자의 덧셈 (1)
+
+```python
+## Mine
+import re
+def solution(my_string):
+    return sum(map(int, list(re.sub('[a-zA-Z]','',my_string))))
+
+  
+## Others
+def solution(my_string):
+  	return sum(int(k) for k in my_string if k.isdigit())
+```
+
+#### 소인수분해
+
+```python
+## Mine
+def solution(n):
+    k=2
+    answer = []
+    while k <= n
+        if n%k == 0:
+            n = n/k
+            if k not in answer:
+                answer.append(k)
+        else:
+            k += 1
+    return answer
+
+## Others
+def solution(n):
+    answer = []
+    for i in range(2,n+1):  # 2이상의 약수를 가진 것
+        while n%i == 0:
+            n = n/i  # 2이상의 소수가 될 때까지 소인수분해
+            if i not in answer:
+                answer.append(i)
+    return answer
+```
+
+
+
