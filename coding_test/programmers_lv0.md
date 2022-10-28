@@ -867,5 +867,67 @@ def solution(n):
     return answer
 ```
 
+​     
+
+### Day13 문자열, 배열, 사칙연산, 수학, 조건문
+
+#### 컨트롤 제트
+
+```python
+## Mine
+def solution(s):
+    s = s.split()
+    for i in s:
+        while 'Z' in s:  # Z가 없을 때까지 Z와 Z왼쪽 원소 제거하기
+            s.pop(s.index('Z')-1)
+            s.pop(s.index('Z'))
+    return sum(map(int, s))
+  
+
+## Others
+def solution(s):
+    answer_list = []
+    for i in s.split(' '):
+        if i != 'Z':  # Z가 아니면 int로 변환하여 리스트에 추가
+            answer_list.append(int(i))
+        else:
+            answer_list.pop()  # Z이면 가장 마지막 원소 pop하여 제거
+    return sum(answer_list)
+```
+
+#### 배열 원소의 길이
+
+```python
+# 방법1
+def solution(strlist):        
+    answer = []
+    for i in strlist:
+        answer.append(len(i))
+    return answer
+
+# 한줄로!
+def solution(strlist):        
+    return [len(k) for k in strlist]
+```
+
+#### 중복된 문자 제거
+
+```python
+def solution(my_string):
+    answer = ''
+    for char in list(my_string):
+        if char not in answer:
+            answer += char
+    return answer
+```
+
+#### 삼각형의 완성조건 (1)
+
+```python
+def solution(sides):
+    sides = sorted(sides)  # sides.sort(reverse=Ture)와 동일
+    return 1 if sides[0]+ sides[1]>sides[-1] else 2
+```
+
 
 
