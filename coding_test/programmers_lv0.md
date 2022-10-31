@@ -931,3 +931,90 @@ def solution(sides):
 
 
 
+### Day14 조건문, 반복문, 시뮬레이션, 문자열
+
+#### 가까운 수
+
+- [정렬 - sort(), sorted() + key](https://docs.python.org/ko/3/howto/sorting.html)
+  - [`list.sort()`](https://docs.python.org/ko/3/library/stdtypes.html#list.sort)와 [`sorted()`](https://docs.python.org/ko/3/library/functions.html#sorted)는 각 리스트 요소에 대해 호출할 함수를 지정하는 *key* 매개 변수를 가짐
+  - *key* 매개 변수의 값은 단일 인자를 취하고 정렬 목적으로 사용할 키를 반환하는 함수여야 함
+- key함수와 operator 모듈 함수
+  - operator 모듈의 `itemgetter()`, `attrgetter()` 및 `methodicaller()`와 결합하여 사용하면 더 간단하고 빠르게 작동함
+
+```python
+## Mine
+def solution(array, n):
+    diff_list = [array[0], abs(n-array[0])]
+    for i in array:
+        diff = abs(n-i)
+        if diff < diff_list[1]:
+            diff_list = [i, diff]
+        elif i < diff_list[0] and diff == diff_list[1]:
+            diff_list = [i, diff]
+    return diff_list[0]
+  
+
+## Others
+# sorted()의 key 파라미터를 활용
+def solution(array, n):
+    array.sort()
+    return sorted(array, key = lambda x: abs(x-n))[0]
+  
+# key를 활용한 대소문자를 구분하지 않는 문자열 비교
+sorted("This is a test string from Andrew".split(), key=str.lower)
+>>> ['a', 'Andrew', 'from', 'is', 'string', 'test', 'This']
+
+# key를 활용한 복잡한 객체 정렬
+student_tuples = [('john', 'A', 15), ('jane', 'B', 12), ('dave', 'B', 10)]
+sorted(student_tuples, key=lambda student: student[2])   # sort by age
+>>> [('dave', 'B', 10), ('jane', 'B', 12), ('john', 'A', 15)]
+
+# key 함수 + operator 모듈
+from operator import itemgetter, attrgetter
+
+sorted(student_tuples, key=itemgetter(2))  # 2번째 인덱스를 기준으로 정렬
+>>> [('dave', 'B', 10), ('jane', 'B', 12), ('john', 'A', 15)]
+
+sorted(student_objects, key=attrgetter('grade', 'age'))  # grade로 정렬 후 age로 정렬
+>>> [('john', 'A', 15), ('dave', 'B', 10), ('jane', 'B', 12)]
+
+```
+
+#### 369게임
+
+```python
+def solution(order):
+    count = 0
+    for i in str(order):
+        if i=='3' or i=='6'or i=='9':  # if i in '369'
+            count += 1
+    return count
+```
+
+#### 암호 해독
+
+```python
+def solution(cipher, code):
+    answer = ''
+    for i in range(code-1, len(cipher), code):
+        answer += cipher[i]
+    return answer
+  
+# 한줄로~
+def solution(cipher, code):
+  	return ''.join([cipher[k] for k in range(code-1, len(cipher), code)])
+```
+
+#### 대문자와 소문자
+
+```python
+def solution(my_string):
+    answer = ''
+    for char in my_string:
+        if char.isupper():
+            answer += char.lower()
+        else:
+            answer += char.upper()
+    return answer
+```
+
