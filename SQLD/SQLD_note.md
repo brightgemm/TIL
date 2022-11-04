@@ -1,6 +1,10 @@
 # SQLD
 
-​      
+
+
+# 과목1 데이터 모델링의 이해
+
+
 
 ## 제1장 데이터 모델링의 이해
 
@@ -386,7 +390,11 @@
 
 
 
-## 제2장 데이터 모델과 성능
+# 과목2 SQL 기본 및 활용
+
+
+
+## 제1장 데이터 모델과 성능
 
 ### 01. 성능 데이터 모델링의 개요
 
@@ -683,3 +691,1534 @@
 #### [기출] 
 
 - GSI(Global Single Instance)는 통합 데이터베이스 구조
+
+​     
+
+​       
+
+## 제2장 데이터 모델링의 이해
+
+### 01. 관계형 데이터베이스 개요
+
+#### 데이터베이스
+
+- 특정 기업이나 조직 또는 개인이 필요에 의 데이터를 일정한 형태로 저장해 놓은 것
+- 데이터베이스의 발전
+  - 플로우차트 -> 데이터베이스 관리 기법, 계층형 데이터베이스, 네트워크 데이터베이스 -> 관계형 데이터베이스 상용화 -> 객체 관계형 데이터베이스로 발전
+- 관계형 데이터베이스(Relational Database)
+  - 영국 수학자 Codd 박사 RDB 소개 -> IBM의 SQL 개발 -> Oracle 등 상용화 제품 출시
+  - 파일시스템은 분산된 데이터 간의 정합성을 유지하는데 과다한 노력이 필요함 
+  - -> 관계형 데이터베이스는 정규화를 통한 합리적인 테이블 모델링 -> 이상현상 제거, 중복 회피, 동시성 관리, 병행 제어 등을 다수의 사용자들이 동시에 데이터 공유 및 조작 가능
+  - 메타 데이터 총괄 관리 -> 데이터 성격, 속성, 표현방법 체계화, 데이터 표준화를 통한 데이터 품질 확보
+  - 인증된 사용자만 참조하는 보안 기능
+  - 데이터 무결성 보장
+  - 갑작스런 장애로부터 데이터 회복, 복구할 수 있는 기능
+
+
+
+#### SQL(Structured Query Language)
+
+- 관계형 데이터베이스에서 데이터 정의, 조작, 제어를 하기 위해 사용하는 언어
+- SQL 문장 종류
+  - ![[표 Ⅱ-1-1] SQL 문장들의 종류](https://dataonair.or.kr/publishing/img/knowledge/SQL_148.jpg)
+
+
+
+#### TABLE
+
+- 테이블은 데이터를 저장하는 객체로서 관계형 데이터베이스의 기본 단위
+- 테이블은 특정 주제와 목적으로 만들어지는 일종의 집합. 반드시 하나 이상의 칼럼을 가짐
+- 관계형 데이터베이스에서는 모든 데이터를 칼럼과 행의 2차원 구조로 표헌
+  - 칼럼과 행이 겹치는 하나의 공간 = 필드(Field)
+  - 각 행을 한 가지 의미로 특정할 수 있는 한 개 이상의 칼럼 = 기본키(PK)
+  - 다른 테이블의 기본키로 사용되면서 테이블과의 관계를 연결하는 역할을 하는 칼럼 = 외부키(FK)
+
+
+
+#### ERD
+
+- ERD 표기법 읽기
+
+
+
+### 02. DDL
+
+#### 데이터 유형
+
+- 특정 칼럼을 정의할 때 선언한 데이터 유형은 그 칼럼이 받아들일 수 있는 자료의 유형을 규정함. 지정한 데이터 크기(size)를 넘어선 자료가 입력되어도 에러 발생
+- SQL Server와 Sybase: 작은 정수형, 정수형, 큰 정수형, 실수형 + money, smallmoney 등 여러 숫자 타입 제공
+- Oracle: number 한 가지 숫자타입의 데이터 유형만 지원
+- 벤더에서 ANSI/ISO 표준을 사용할 때는 기능 중심으로 구현하기 때문에 일반적으로 표준과 다른 용어를 사용하는 것은 현실적으로 허용(Ex. numeric -> number, window function -> analytic/rank function)
+- ![[표 Ⅱ-1-7] 자주 쓰이는 데이터 유형](https://dataonair.or.kr/publishing/img/knowledge/SQL_162.jpg)
+  - CHAR 유형: 문자열 비교할 때 공백을 채워서 비교. 끝의 공백만 다르면 같다고 판단 (Ex. 'AA' == 'AA ')
+  - VARCHAR 유형: 가변 길이이므로 길이가 다양한 칼럼과, 정의된 길이가 실제 데이터 길이에 차이가 있는 칼럼에 적합. 끝에 공백이 다른 다른 문자로 판단 (Ex. 'AA' != 'AA ')
+
+
+
+#### CREATE TABLE
+
+- 테이블 생성을 위해서 해당 테이블에 입력될 데이터를 정의하고, 데이터 유형 선언
+- 테이블과 칼럼 정의
+  - 테이블에 존재하는 모든 데이터를 고유하게 식별할 수 있으면서 반드시 값이 존재하는 단일 칼럼이나 칼럼의 조합들(후보키) 중에 하나 선정하여 PK지정
+  - 테이블간 정의된 관계는 PK와 FK를 활용하여 설정
+  - 이상 현상 방지를 위해 팀 테이블 분리 후 외부키로 참조하도록 데이터 모델링 및 정규화
+- 테이블 생성: `CREATE TABLE`
+  - `CREATE TABLE 테이블 이름 (칼럼명1 DATATYPE [DEFAULT 형식], 칼럼명2 DATATYPE [DEFAULT 형식], 칼럼명2 DATATYPE [DEFAULT 형식]);`
+  - 테이블명 명명 주의사항
+    - 테이블명은 객체를 의미할 수 있는 적절한 이름
+    - 가급적 단수형
+    - 다른 테이블의 이름과 중복되지 않도록
+    - 한 테이블 내에서는 칼럼명이 중복될 수 없음
+    - 테이블 이름을 지정하고 각 칼럼들은 ()로 묶어 지정
+    - 각 칼럼은 ,로 구분하고 테이블 생성문의 끝은 항상 ;
+    - 칼럼은 다른 테이블을 고려하여 데이터베이스 내에서 일관성있게 사용(데이터 표준화 관점)
+    - 칼럼 뒤에 데이터 유형 지정 필수
+    - 테이블명, 칼럼명은 반드시 문자로 시작, 벤더별로 길이 한계 존재
+    - 벤더에서 사전에 정의한 예약어는 사용 불가
+    - A-Z, a-z, 0-9, _, $, # 문자만 허용
+- 제약 조건
+  - 데이터 무결성을 유지하기 위한 데이터베이스의 보편적인 방법으로, 테이블의 특정 칼럼에 설정하는 제약
+  - ![[표 Ⅱ-1-10] 제약조건의 종류](https://dataonair.or.kr/publishing/img/knowledge/SQL_166.jpg)
+- NULL(ASCII 코드 00번)
+  - 공백(BLANK, ASCII 코드 32번)이나 숫자 0(ZERO, ASCII 48)과는 전혀 다른 값이며, 조건에 맞는 데이터가 없을 때의 공집합과도 다름. 
+  - 'NULL’은 ‘아직 정의되지 않은 미지의 값’이거나 ‘현재 데이터를 입력하지 못하는 경우’
+- 기본값(DEFAULT)
+  - 데이터 입력시 명시된 값을 지정하지 않은 경우 null값 입력, defaul값을 정의했으면 사전에 정의한 기본값이 입력됨
+- 생성된 테이블 구조 확인: `DESCRIBE 테이블명` 또는 `DESC 테이블명`
+  - SQL Server의 경우: `sp_help "dbo.테이블명"` (+go 칼럼이름 데이터유형)
+  - 테이블명 뒤에 칼럼은  null 가능
+- SELECT 문장을 통한 테이블 생성 사례(CTAS: Create Table As Select ~)
+  - 기존 테이블을 이용한 CTAS 방법을 이용하면 칼럼별로 데이터 유형을 다시 재정의할 필요 없음
+  - 기존 테이블의 제약조건 중 not null만 유지되고 기본키, 고유키, 외래키, CHECK 등 다른 제약조건은 없어짐. 제약조건 추가를 위해서는 ALTER TABLE 사용
+
+
+
+#### ALTER TABLE
+
+- 칼럼을 추가/삭제하거나 제약조건을 추가/삭제하는 작업
+
+- `ALTER TABLE 테이블명 ADD 추가 칼럼명(데이터 유형);` : 기존 테이블에 필요한 칼럼 추가
+
+  - 새로 추가된 칼럼은 테이블의 마지막 칼럼. 위치 지정 불가
+
+- `ALTER TABLE 테이블명 DROP COLUMN 삭제할 칼럼명`;
+
+  - 데이터가 있거나 없거나 모두 삭제 가능
+  - 한번에 하나씩만 삭제 가능하며 삭제 후 최소 하나 이상의 칼럼이 테이블에 존재해야 함
+  - 삭제된 칼럼은 복구 불가
+
+- `ALTER TABLE 테이블명 MODIFY (칼럼명1 데이터유형 [DEFAULT식][NOT NULL], 칼럼명2 데이터유형 []...);`
+
+  - 칼럼의 데이터 유형, 디폴트값, not null 제약조건에 대한 변경 포함
+  - 칼럼 변경 시 고려사항
+    - 칼럼의 크기를 늘릴 수는 있지만 줄일 수 없음(기존 데이터 훼손 문제)
+    - 해당 칼럼이 null값만 가지고 있거나 테이블에 아무 행도 없으면 칼롬의 폭 줄일 수 있음
+    - 해당 칼럼이 null값만 가지고 있으면 데이터 유형 변경 가능
+    - 해당 칼럼의 DEFAULT값을 바꾸면 변경 이후 추가되는 행에만 적용
+    - 해당 칼럼에 null값이 없을 경우에만 not null 제약조건 추가 가능
+
+- `ALTER TABLE 테이블명 RENAME COLUMN 변경전칼럼명 TO 새칼럼명;`
+
+  - 칼럼명을 불가피하게 변경해야하는 경우에 사용
+  - 칼럼명이 변경되면 해당 칼럼과 관계된 제약조건에 대해서도 자동으로 변경되나, 일부 DBMS 에서만 지원하는 기능
+
+- `ALTER TABLE 테이블명 DROP CONSTRAINT 제약조건명;`
+
+  - 테이블 생성 시 부여했던 제약조건 삭제 (Ex. 외래기 제약조건 삭제)
+
+- `ALTER TABLE 테이블명 ADD CONSTRAINT 제약조건명 제약조건 (칼럼명);`
+
+  -  ` Oracle ALTER TABLE PLAYER ADD CONSTRAINT PLAYER_FK FOREIGN KEY (TEAM_ID) REFERENCES TEAM(TEAM_ID);`
+  - 제약조건 설정 후 참조 테이블을 제거하는 경우 무결성 제약조건에 의해 삭제 불가
+
+  
+
+#### RENAME TABLE
+
+- 테이블 이름 변경
+  - `RENAME 변경전 테이블명 TO 변경후 테이블명;`
+  - SQL Server: `sp_rename "dbo.변경전 테이블명", "변경후 테이블명";`
+
+
+
+#### TRUNCATE TABLE
+
+- 테이블 자체 삭제가 아닌 해당 테이블의 모든 행을 제거하여 저장 공간을 재사용 가능하도록 해제. 완전 삭제시 DROP TABLE 이용
+- `TRUNCATE TABLE 테이블명;`
+- DROP TABLE은 테이블 자체가 없어지기 때문에 테이블 구조를 확인할 수 없지만 TRUNCATE는 구조는 그대로 유지한 채 데이터를 삭제하기 때문에 조회 가능
+- TRUNCATE는 완전한 데이터 복구 불가능
+
+
+
+### 03. DML
+
+- 만들어진 테이블에 관리할 자료들을 입력, 수정, 삭제, 조회하는 언어
+
+
+
+#### INSERT
+
+- `INSERT INTO 테이블명 (COLUMN_LIST)VALUES (COLUMN_LIST에 넣을 VALUE_LIST);`
+- `INSERT INTO 테이블명 VALUES (전체 COLUMN_LIST에 넣을 VALUE_LIST);`
+
+- 한 번에 한 건만 입력됨
+- 해당 칼럼명과 입력되어야 하는 값을 1:1 매핑하여 입력
+- 데이터 유형이 문자형일 경우 '(작은 따옴표)로 값 입력, 숫자일 경우 작은 따옴표 붙이지 않음
+  - ` INSERT INTO PLAYER VALUES ('2002010','이청용','K07','','BlueDragon','2002','MF','17',NULL, NULL,'1',180,69);`
+
+
+
+#### UPDATE
+
+- 입력한 정보 중 잘못 입력되거나 변경이 발생하여 정보를 수정해야 하는 경우
+- `UPDATE 테이블명 SET 수정할 칼럼명 = 수정할 값;`
+  - `UPDATE PLAYER SET BACK_NO = 99;`
+
+
+
+#### DELETE
+
+- 테이블의 정보가 필요 없게 되었을 경우 데이터 삭제
+- `DELETE [FROM] 삭제할 자료가 있는 테이블명`
+  - WHERE절을 사용하지 않으면 전체 테이블 삭제
+- DDL 명령어와 DML 명령어의 차이
+  - DDL은 즉시 작업 완료, DML은 메모리 버퍼에 올려놓기 때문에 COMMIT 명령어를 입력하여 TRANSACTION을 종료해야 작업이 반영됨
+  - DELETE는 로그 데이터가 남기 때문에 ROLLBACK 가능하나 TRUNCATE는 불가
+
+
+
+#### SELECT
+
+- 입력한 데이터 조회
+- `SELECT 칼럼명1, 칼럼명2, ... FROM 테이블명;`
+- DISTINCT 옵션
+  - `SELECT [ALL] POSITION FROM PLAYER;`ALL은 생략 가능한 키워드 -> 전체 테이블이 조회됨
+  - `SELECT DISTINCT POSITION FROM PLAYER;`중복된 데이터는 1건으로 처리하여 출력 -> 5개의 행이 조회됨
+- WILDCARD 옵션
+  - 입력한 정보들을 보기 위해 해당 테이블에서 보고 싶은 정보가 있는 칼럼들을 선택하여 조회하는 것. 해당 테이블의 모든 칼럼 정보를 보고 싶을 경우 와일드카드로 애스터리스트(*)를 사용하여 조회
+  - `SELECT * FROM 테이블명;`-> 테이블에 있는 모든 칼럼 조회
+    - 문자 및 날짜 데이터 -> 좌측정렬,  숫자 데이터 -> 우측정렬
+- ALIAS 부여하기
+  - 조회된 결과에 일종의 별명(ALIAS, ALIASES)을 부여하여 칼럼 레이블 변경 가능
+  - ALIAS의 조건
+    - 칼럼명 바로 뒤에 옴
+    - 칼럼명과 ALIAS 사이에 AS, as 키워드를 사용할 수 있음(optional)
+    - 이중 인용부호는 ALIAS가 공백, 특수문자를 포함할 경우와 대소문자 구분이 필요할 경우 사용
+  - Ex) 입력한 선수들의 정보를 칼럼 별명을 이용하여 출력한다.
+    - `SELECT PLAYER_NAME [AS] 선수명, POSITION [AS] 위치, HEIGHT [AS] 키, WEIGHT [AS] 몸무게 FROM PLAYER;`
+  - Ex) 공백, 특수문자 포함할 경우 ''필요
+    - `SELECT PLAYER_NAME "선수 이름", POSITION "그라운드 포지션", HEIGHT "키", WEIGHT "몸무게" FROM PLAYER;`
+
+
+
+#### 산술 연산자와 합성 연산자
+
+- 산술 연산자: numeric, date 자료형에 대해 적용되며 일반적인 사칙연산과 동일
+  - 우선순위를 위한 괄호 적용 가능
+  - 산술 연산이나 함수를 적용하면 칼럼의 라벨이 길어지므로 적절한 ALIAS를 새롭게 부여하는 것이 좋음
+  - `SELECT PLAYER_NAME 이름, HEIGHT - WEIGHT "키-몸무게" FROM PLAYER;`
+- 합성 연산자: 문자와 문자를 연결하는 합성 연산자
+  - Oracle: 문자 || 문자
+  - SQL Server: 문자 + 문자
+  - 두 벤더 모두 `CONCAT(string1, string2)` 함수 사용 가능
+  - 칼럼과 문자 또는 칼럼과 칼럼을 연결시킴
+  - 문자표현식의 결과에 의해 새로운 칼럼 생성
+  - `Oracle SELECT PLAYER_NAME || '선수,' || HEIGHT || 'cm,' || WEIGHT || 'kg' 체격정보 FROM PLAYER;`
+  - `SQL Server SELECT PLAYER_NAME +'선수, '+ HEIGHT +'cm, '+ WEIGHT +'kg'체격정보 FROM PLAYER;`
+
+
+
+### 04. TCL
+
+#### 트랜잭션 개요
+
+- 데이터베이스의 논리적 연산단위(세부적인 연산들의 집합)
+- 밀접히 관련되어 분리될 수 없는 한 개 이상의 데이터베이스 조작 -> 전부 적용하거나 전부 취소
+- 하나의 트랜잭션에는 하나 이상의 SQL 문장 포함
+- 데이터베이스 응용프로그램은 트랜잭션의 집합
+- TCL(Transaction Control Language): 저장점 기능과 함께 3가지 명령어의 트랜잭션을 관리하는 언어
+  - 커밋(COMMIT): 올바르게 반영된 데이터를 데이터베이스에 반영시키는 것
+  - 롤백(ROLLBACK): 트랜잭션 시작 이전의 상태로 되돌리는 것
+  - 저장점(SAVEPOINT)
+  - 트랜잭션의 대상이 되는 SQL문: DML문(UPDATE, INSERT, DELETE + 배타적 LOCK을 요구하는 SELECT문)
+- ![[표 Ⅱ-1-14] 트랜잭션의 특성](https://dataonair.or.kr/publishing/img/knowledge/SQL_170.jpg)
+  - 원자성을 충족하기 위해 다양한 레벨의 잠금을 제공
+  - 잠금(LOCKING)
+    - 트랜잭션이 수행하는 동안 특정 데이터에 대해서 다른 트랜잭션이 동시에 접근하지 못하도록 제한하는 기법
+    - 간섭이나 방해받지 않는 것이 보장
+    - 잠금이 걸린 데이터는 잠금을 수행한 트랜잭션만이 해제할 수 있음
+
+
+
+#### COMMIT
+
+- 입력, 수정, 삭제한 자료에 대해 전혀 문제가 없다고 판단될 경우 커밋 명령어를 통해 트랜잭션 완료
+- COMMIT, ROLLBACK 이전의 데이터 상태?
+  - 메모리 버퍼에만 영향을 받았기 때문에 데이터의 변경 이전 상태로 복구 가능
+  - 사용자는  SELECT문으로 결과 확인 가능
+  - 다른 사용자는 현재 사용자가 수행한 명령의 결과를 볼 수 없음
+  - 변경된 행은 잠금 설정되어 다른 사용자가 변경할 수 없음
+- COMMIT 이후의 데이터 상태
+  - 데이터 변경 사항이 데이터베이스에 반영됨
+  - 이전 데이터는 영원히 소실
+  - 모든 사용자가 결과 확인 가능
+  - 관련 행의 잠금이 해제되고 다른 사용자들이 행 조작 가능
+- SQL Server의 트랜잭션
+  - AUTO COMMIT
+    - 기본 방식
+    - DML, DDL을 수행할 때마다 DBMS가 트랜잭션을 컨트롤하는 방식
+    - DML문이 성공이면 자동으로 커밋, 오류나면 롤백
+  - 암시적 트랜잭션
+    - Oracle과 같은 방식
+    - 트랜잭션의 시작은 DBMS가 처리 ->  끝은 사용자가 명시적으로 커밋 또는 롤백으로 처리
+    - 인스턴스 단위 또는 세션 단위로 설정할 수 있음
+  - 명시적 트랜잭션
+    - 시작과 끝을 모두 사용자가 명시적으로 지정하는 방식
+    - `BEGIN TRANSACTION`으로 시작 -> `COMMIT TRANSACTION` 또는 `ROLLBACK TRANSCACTION`으로 트랜잭션 종료
+    - 롤백을 만나면 최초의 시작점까지 모두 롤백이 수행됨
+
+
+
+#### ROLLBACK
+
+- 테이블 내 입력, 수정, 삭제한 데이터에 대하여 커밋 이전에 변경 사항을 취소할 때 사용
+- 데이터 변경 사항이 취소되어 데이터의 이전 상태로 복구되며, 관련 행의 잠금 해제, 다른 사용자들이 데이터 변경 가능
+- SQL Server의 롤백
+  - auto commit이 기본 방식이므로 임의적으로 롤백을 수행하려면 명시적으로 트랜잭션을 선언해야 함
+  - ` SQL Server BEGIN TRAN INSERT INTO PLAYER (PLAYER_ID, TEAM_ID, PLAYER_NAME, POSITION, HEIGHT, WEIGHT, BACK_NO) VALUES ('1999035', 'K02', '이운재', 'GK', 182, 82, 1); ROLLBACK; `
+- ROLLBACK 이후의 데이터 상태
+  - 데이터에 대한 변경 사항 취소
+  - 이전 데이터는 다시 재저장됨
+  - 관련 행의 잠금 해제 및 다른 사용자들이 데이터 조작 가능
+
+- 커밋과 롤백 사용 효과
+  - 데이터 무결성 보장
+  - 영구적 변경 전 변경사항 확인
+  - 논리적 연관작업을 그룹핑하여 처리 가능
+
+
+
+#### SAVEPOINT
+
+- 저장점을 정의하면 롤백할 때 트랜잭션에 포함된 전체 작업을 롤백하는 것이 아니라 현시점~저장점까지의 트랜잭션 일부만 롤백 가능
+- 복잡한 대규모 트랜잭션에서 에러 발생했을 때 유용
+- 복수의 저장점을 정의할 수 있으며 동일이름으로 정의했을 경우 나중에 정의한 저장점이 유효
+- `SAVEPOINT 저장점명;`= `SAVE TRANSACTION 저장점명;`(SQL Server)
+-  -> `ROLLBACK TO 저장점명;` = `ROLLBACK TRAN 저장점명;`(SQL Server)
+- 트랜잭션이 자동으로 종료되는 경우
+  - DDL 문장을 실행하면 DDL 수행 전에 자동으로 커밋
+  - 데이터베이스를 정상적으로 접속을 종료했을 때 자동으로 트랜잭션 커밋
+  - 애플리케이션의 이상 종료로 데이터베이스와의 접속이 단절되었을 때 자동으로 트랜잭션 롤백
+
+
+
+### 05. WHERE 절
+
+- 자신이 원하는 자료만을 검색하기 위해 자료 제한
+- `SELECT [DISTINCT/ALL] 칼럼명 [ALIAS명] FROM 테이블명 WHERE 조건식`
+- FROM절 다음에 위치. 조건식의 구성
+  - 칼럼명 좌측에 위치
+  - 비교연산자, 문자, 숫자, 표현식(우측에 위치)
+  - 비교 칼럼명(조인 사용시)
+
+
+
+#### 연산자의 종류
+
+- 비교 연산자: +, > , >=, <, <=
+- SQL 연산자: `BETWEEN a AND b`, `IN (list)`, `Like '비교문자열'` , `is NULL`
+- 논리 연산자: AND, OR, NOT
+- 부정 비교 연산자: !=, ^=, <>, NOT 칼럼명 = , NOT 칼럼명 >
+- 부정 SQL 연산자: `NOT` + SQL 연산자 
+- 연산자의 우선순위: 괄호() > NOT 연산자 > 비교, SQL 비교 연산자 > AND > OR
+
+
+
+#### 비교 연산자
+
+- 문자 유형간 비교 조건이 발생하는 경우
+  - ![[표 Ⅱ-1-18] 문자 유형 비교 방법](https://dataonair.or.kr/publishing/img/knowledge/SQL_175.jpg)
+
+
+
+#### SQL 연산자
+
+- SQL 문장에서 사용하도록 기본적으로 예약되어 있는 연산자. 모든 데이터 ㅏ입에 대해서 연산 가능
+- ![[표 Ⅱ-1-19] SQL 연산자의 종류](https://dataonair.or.kr/publishing/img/knowledge/SQL_176.jpg)
+  - LIKE 연산자에서 와일드카드 사용 가능
+    - %: 0개 이상의 어떤 문자 (Ex. Like '장%' -> 장씨 성의 모든 데이터 조회)
+    - _: 1개인 단일 문자
+  - IS NULL 연산자
+    - null값은 값이 존재하지 않는 것이므로 어떤 값보다 크거나 작지도 않고 공백이나 0과 달리 비교 자체가 불가능함
+    - null값과의 수치연산은 null값 리턴
+    - null값과 비교연산은 False리턴
+
+
+
+#### 논리 연산자
+
+- 비교 연산자나 SQL 비교 연산자들로 이루어진 여러 개이 조건들을 논리적으로 연결시키기 위해서 사용되는 연산자
+- AND, OR, NOT
+- 논리 연산자들이 여러 개가 같이 사용되었을 때의 처리 우선순위는 ( ), NOT, AND, OR의 순서
+
+
+
+#### 부정 연산자
+
+- 비교 연산자, SQL 비교 연산자에 대한 부정 표현을 부정 논리 연산자, 부정 SQL 연산자로 구분
+- ![[표 Ⅱ-1-23] 부정 연산자 종류](https://dataonair.or.kr/publishing/img/knowledge/SQL_180.jpg)
+
+
+
+#### ROWNUM, TOP 사용
+
+- ROWNUM: 오라클의 rownum은 칼럼과 비슷한 성격의  Pseudo Column으로써 SQL 처리 결과 집합의 각 행에 대해 임시로 부여되는 일련번호
+  - 테이블이나 집합에서 원하는 만큼의 행만 가져오고 싶을 때 where절에서 행 개수 제한하는 목적으로 사용
+    - `SELECT PLAYER_NAME FROM PLAYER WHERE ROWNUM <= 1;`
+  - 테이블 내의 고유한 키나 인덱스 값을 만들 수 있음
+    - `UPDATE MY_TABLE SET COLUMN1 = ROWNUM;`
+- TOP절: SQL Server는 TOP절을 사용하여 결과 집합으로 출력되는 행의 수 제한
+  - `TOP (Expression) [PERCENT] [WITH TIES]`
+    - Expression: 반환할 행의 수 지정
+    - PERCENT: 쿼리 결과 집합에서 처음 Expression%의 행만 반환됨
+    - WITH TIES: ORDER BY절이 지정된 경우에만 사용, TOP N(PERCENT)의 마지막 행과 같은 값이 있는 경우 추가 행이 출력되도록 지정
+      - 한 건의 행만 가져오고 싶을 때:  `SELECT TOP(1) PLAYER_NAME FROM PLAYER; `
+      - 두 건 이상의 n개 행을 가져오고 싶을 때: `SELECT TOP(N) PLAYER_NAME FROM PLAYER;`
+- SQL 문장에서 ORDER BY절이 사용되지 않으면 오라클의  ROWNUM과 SQL Server의 TOP절은 같은 기능
+
+
+
+### 06. 함수
+
+#### 내장 함수(BUILT-IN FUNCTION) 개요
+
+- 벤더에서 제공하는 내장함수는  SQL을 더욱 강력하게 해주고, 데이터 값을 간편하게 조작하는데 사용됨
+- 입력값 행 개수에 따른 분류
+  - 단일행 함수(Single-Row Function): 단일행 값이 입력됨
+    - 처리하는 데이터 형식에 따라 분류
+      - ![[표 Ⅱ-1-24] 단일행 함수의 종류](https://dataonair.or.kr/publishing/img/knowledge/SQL_181.jpg)
+    - 단일행 함수의 특징
+      - SELECT, WHERE, ORDER BY절에 사용 가능
+      - 각 행들에 대해 개별적으로 작용하여 데이터 값들을 조작하고 결과를 리턴
+      - 여러 인장를 입력해도 단 하나의 결과만 리턴
+      - 함수의 인자로 상수, 변수, 표현식이 사용 가능. 여러 개의 인수를 가질 수 있음
+      - 특별한 경우가 아니면 함수의 인자로 함수를 사용하는 함수 중첩 가능
+  - 다중행 함수(Multi-Row Function): 여러 행의 값이 입력됨
+    - 집계 함수(Aggregate Fuction)
+    - 그룹 함수(Group Fuction)
+    - 윈도우 함수(Window Function)
+- 함수는 입력값이 아무리 많아도 출력은 하나만 되는 m:1 관계
+
+
+
+#### 문자형 함수
+
+- 문자형 함수: 문자 데이터를 매개 변수로 받아들여서 문자나 숫자 값의 결과를 돌려주는 함수
+- ![[표 Ⅱ-1-25] 단일행 문자형 함수의 종류](https://dataonair.or.kr/publishing/img/knowledge/SQL_182.jpg)
+- ![[표 Ⅱ-1-26] 단일행 문자형 함수 사례](https://dataonair.or.kr/publishing/img/knowledge/SQL_183.jpg)
+  - `Oracle SELECT LENGTH('SQL Expert') FROM DUAL; LENGTH('SQL Expert');` 
+    - DUAL 테이블의 특성
+      - 사용자 SYS가 소유하며 모든 사용자가 액세스 가능한 테이블
+      - `SELECT ~ FROM ~ `형식을 갖추기 위한 일종의 더미 테이블
+    - Sybase나 SQL Server의 경우에는 SELECT 절만으로도 SQL 문장이 수행 가능하도록 정의하였기 때문에 DUAL이란 DUMMY 테이블이 필요 없음
+    - Sybase나 SQL Server의 경우에도 사용자 테이블의 칼럼을 사용할 때는 FROM 절이 필수적으로 사용됨
+
+
+
+#### 숫자형 함수
+
+- 숫자 데이터를 입력받아 처리하고 숫자를 리턴하는 함수
+- ![[표 Ⅱ-1-27] 단일행 숫자형 함수 종류](https://dataonair.or.kr/publishing/img/knowledge/SQL_184.jpg)
+- ![[표 Ⅱ-1-28] 단일행 숫자형 함수 사례](https://dataonair.or.kr/publishing/img/knowledge/SQL_185.jpg)
+
+
+
+#### 날짜형 함수
+
+- DATE 타입의 값들을 연산하는 함수
+- 오라클의 경우  TO_NUMERIC(TO_CHAR())함수의 경우 변환형 함수로도 구분할 수 있음
+- SQL Server의 YEAR, MONTH, DAY함수와 매핑하기 위하여 날짜형 함수에서 설명
+- EXTRACT/DATEPART는 같은 기능을 하는 오라클 내장함수와  SQL Server 내장 함수를 표현 
+- ![[표 Ⅱ-1-29] 단일행 날짜형 함수 종류](https://dataonair.or.kr/publishing/img/knowledge/SQL_186.jpg)
+- ![[표 Ⅱ-1-30] 단일행 날짜형 데이터 연산](https://dataonair.or.kr/publishing/img/knowledge/SQL_187.jpg)
+- 데이터베이스는 날짜를 저장할 때 내부적으로 세기, 년, 월, 일, 시, 분, 초와 같은 숫자 형식으로 변환하여 저장
+
+
+
+#### 변환형 함수
+
+- 특정 데이터 타입을 다양한 형식으로 출력하고 싶은 경우에 사용
+- 데이터 유형 변환 종류
+  - 명시적 데이터 유형 변환: 데이터 변환형 함수로 데이터 유형을 변환하도록 명시
+    - ![[표 Ⅱ-1-32] 단일행 변환형 함수의 종류](https://dataonair.or.kr/publishing/img/knowledge/SQL_189.jpg)
+    - 변환형 함수를 사용하여 출력 형식을 지정하면 숫자형과 날짜형의 경우 많은 포맷이 벤더별로 제공됨 -> 
+  - 암시적 데이터 유형 변환: 데이터베이스가 자동으로 데이터 유형을 변환하여 계산
+    - 성능 저하 가능성, 에러 가능성이 있으므로 명시적 데이터 유형 변환 사용이 더 바람직
+
+
+
+#### CASE 표현
+
+- IF-THEN-ELSE 논리와 유사한 방식. 표현식을 작셩하여  SQL의 비교 연산 기능을 보완하는 역할
+- 함수와 같은 성격을 가지고 있으며, 함수와 같은 기능을 수행함
+- if-then-else 로직: ` IF SAL > 2000 THEN REVISED_SALARY = SAL ELSE REVISED_SALARY = 2000 END-IF.'`
+- case 표현: `SELECT ENAME, CASE WHEN SAL > 2000 THEN SAL ELSE 2000 END REVISED_SALARY FROM EMP;`
+- CASE 표현을 위한 조건절 표현 방법
+  - ![[표 Ⅱ-1-33] 단일행 CASE 표현의 종류](https://dataonair.or.kr/publishing/img/knowledge/SQL_190.jpg)
+  - IF-THEN-ELSE 논리를 구현하는 CASE Expression은 Simple Case Expression or Searched Case Expression 중 선택
+  - Searched_Case_expression은 칼럼이나 표현식을 표시하지 않고 다음 WHEN 절에서 여러 조건절을 사용하여 다양한 조건을 적용할 수 있음
+
+
+
+#### NULL 관련 함수
+
+- NVL/ISNULL
+  - 널값 != 0(숫자) 또는 공백(문자)
+  - 테이블 생성 시 not null 또는 PK로 정의되지 않은 모든 데이터 유형은 널값을 포함할 수 있음
+  - ![[표 Ⅱ-1-35] 단일행 NULL 관련 함수의 종류](https://dataonair.or.kr/publishing/img/knowledge/SQL_192.jpg)
+  - Oracle: `NVL (NULL 판단 대상,‘NULL일 때 대체값’)`
+  - SQL Server: `ISNULL (NULL 판단 대상,‘NULL일 때 대체값’)`
+- NULL과 공집합
+  - 공집합의 NVL/ISNULL 함수 사용
+    - `SELECT 1 FROM DUAL WHERE 1 = 2;` 와 같은 조건이 대표적인 공집합을 발생시키는 쿼리
+    - 조건에 맞는 데이터가 한 건도 없는 경우를 공집합이라고 하고, NULL 데이터와는 다른 개념임
+    - 인수의 값이 공집합인 경우는 NVL/ISNULL함수를 사용해도 공집합 출력됨
+- NULLIF
+  -  EXPR1이 EXPR2와 같으면 NULL을, 같지 않으면 EXPR1을 리턴
+  - 특정 값을 NULL로 대체하는 경우에 유용하게 사용
+- COALESCE
+  - 인수의 숫자가 한정되어 있지 않으며, 임의의 개수 EXPR에서 NULL이 아닌 최초의  EXPR을 나타냄
+
+​    
+
+### 07. Group By, Having 절
+
+#### 집계함수
+
+- 여러 행들의 그룹이 모여서 그룹당 단 하나의 결과를 돌려주는 다중행 함수
+- GROUP BY 절은 행들을 소그룹화
+- SELECT 절, HAVING 절, ORDER BY 절에 사용
+- `집계함수명 ([DISTINCK|ALL] 칼럼 또는 표현식;)`
+- ![[표 Ⅱ-1-36] 집계 함수의 종류](https://dataonair.or.kr/publishing/img/knowledge/SQL_193.jpg)
+  - 일반적으로 집계 함수는 GROUP BY 절과 같이 사용되지만 아래와 같이 테이블 전체가 하나의 그룹이 되는 경우에는 GROUP BY 절 없이 단독으로도 사용 가능
+  - ` SELECT COUNT(*) "전체 행수", COUNT(HEIGHT) "키 건수", MAX(HEIGHT) 최대키, MIN(HEIGHT) 최소키, ROUND(AVG(HEIGHT),2) 평균키 FROM PLAYER;`
+
+
+
+#### GROUP BY 절
+
+- SQL 문에서  FROM 절과 WHERE 절 뒤에 오며, 데이터들을 작은 그룹으로 분류하여 소그룹에 대한 항목별 통계 정보를 얻을 때 사용
+- `SELECT [DISTINCT] 칼럼명 [ALIAS명] FROM 테이블명 [WHERE 조건식] [GROUP BY 칼럼(Column)이나 표현식] [HAVING 그룹조건식] ;`
+- GROUP BY 절의 특징
+  - GROUP BY 절을 통해 소그릅별 기준을 정한 후 SELECT 절에 집계 함수 사용
+  - 집계 함수의 통계 정보에는 null값을 가진 행 제외하고 수행
+  - GROUP BY 절에는 ALIAS 명을 사용 불가
+  - 집계 함수는 WHERE 절에는 올 수 없음
+  - WHERE 절은 전체 데이터를 그룹으로 나누기 전에 먼저 수행됨
+
+
+
+#### HAVING 절
+
+- HAVING 절의 특징
+  - GROUP BY 절의 기준 항목이나 소그룹의 집계 함수를 이용한 조건 표시
+  - GROUP BY 절에 의한 집계 데이터 중 HAVING 절에서 제한 조건을 두어 조건을 만족하는 내용만 출력
+  - HAVING 절은 일반적으로 GROUP BY 절 뒤에 위치함
+  - FROM -> WHERE -> GROUP BY -> HAVING
+  - WHERE 절과 비슷하나 HAVING은 결과 집합의 행에 조건을 적용시킴
+  - GROUP BY 절과 HAVING 절의 순서를 바꾸어서 수행하더라도 문법 에러도 없고 결과물도 동일한 결과를 출력
+- `SELECT POSITION 포지션, ROUND(AVG(HEIGHT),2) 평균키 FROM PLAYER GROUP BY POSITION HAVING AVG(HEIGHT) >= 180;`
+
+
+
+#### CASE 표현을 활용한 월별 데이터 집계
+
+- `집계 함수(CASE( ))~GROUP BY`
+  - 모델링의 제1정규화로 인해 반복되는 칼럼의 경우, 구분 칼럼을 두고 여러 개의 레코드로 만들어진 집합을 정해진 칼럼 수만큼 확장해서 집계 보고서를 만드는 유용한 기법
+  - Ex) 부서별로 월별 입사자의 평균 급여를 알고 싶다는 고객의 요구사항이 있는데, 입사 후 1년마다 급여 인상이나 보너스 지급과 같은 일정이 정기적으로 잡힌다면 업무적으로 중요한 정보
+
+
+
+#### 집계 함수와 NULL
+
+- 다중행 함수는 입력값 전체가 널값인 경우만 함수의 결과가 널값이며, 일부만 널값인 경우 집계 함수에서 해당 행을 제외하고 수행됨
+
+
+
+### 08. Order By 절
+
+#### ORDER BY 정렬
+
+- SQL 문장으로 조회된 데이터들을 특정 칼럼을 기준으로 정렬하여 출력할 때 사용
+- ORDER BY 절에 칼럼명 대신 ALIAS명 또는 칼럼 순서를 나타내는 정수도 사용 가능
+- 오름차순이 기본 적용: ASC(Ascending), DESC(Descending) 
+- 날짜형 데이터 타입은 오름차순으로 정렬했을 경우 날짜 값이 가장 빠른 것이 먼저 출력
+- 오라클에서는 널값을 가장 큰값으로, SQL 서버에서는 널값을 가장 작은 값으로 간주함
+- SQL문 제일 마지막에 위치
+- ORDER BY 절에서 SELECT 절에서 정의하지 않은 칼럼을 사용해도 문제없음
+- `SELECT 칼럼명 [ALIAS명] FROM 테이블명 [WHERE 조건식] [GROUP BY 칼럼(Column)이나 표현식] [HAVING 그룹조건식] [ORDER BY 칼럼(Column)이나 표현식 [ASC 또는 DESC]] ;`
+
+
+
+#### SELECT 문장 실행 순서
+
+- `SELECT 칼럼명 [ALIAS명] FROM 테이블명 WHERE 조건식 GROUP BY 칼럼(Column)이나 표현식 HAVING 그룹조건식 ORDER BY 칼럼(Column)이나 표현식;`
+  - 1. FROM 테이블명: 발췌 대상 테이블 참조
+    2. WHERE 조건식: 발췌 대상 데이터가 아닌 것은 제거
+    3. GROUP BY 칼럼(Column)이나 표현식: 행들을 소그룹화 
+    4. HAVING 그룹조건식: 그룹핑된 값의 조건에 맞는 것만을 출력
+    5. SELECT 칼럼명 [ALIAS명]: 데이터 값을 출력/계산
+    6. ORDER BY 칼럼(Column)이나 표현식: 데이터를 정렬
+- SELECT 절에서는 그룹핑 기준과 숫자 형식 칼럼의 집계 함수를 사용할 수 있지만, 그룹핑 기준 외의 문자 형식 칼럼은 정할 수 없다
+- `SELECT JOB FROM EMP GROUP BY JOB HAVING COUNT(*) > 0 ORDER BY MAX(EMPNO), MAX(MGR), SUM(SAL), COUNT(DEPTNO), MAX(HIREDATE);`
+  - SELECT SQL에서 GROUP BY 절이 사용되었기 때문에 SELECT 절에 정의하지 않은 MAX, SUM, COUNT 집계 함수도 ORDER BY 절에서 사용할 수 있음
+
+
+
+#### TOP N 쿼리
+
+- ROWNUM
+
+  - 오라클에서는 데이터의 일부가 먼저 추출된 후 정렬작업이 진행되기 때문에 주의해야함
+    - Ex) `SELECT ENAME, SAL FROM EMP WHERE ROWNUM < 4 ORDER BY SAL DESC;`
+    - 급여가 상위 3명을 출력한 것이 아니라 무작위 추출된 3명의 급여를 정렬한 결과이므로 원하는 결과가 아님
+  - ORDER BY 절이 없으면 ORACLE의 ROWNUM 조건과 SQL SERVER의 TOP 절은 같은 결과
+  - ORDER BY 절이 사용되는 경우 ORACLE은 ROWNUM 조건을 ORDER BY 절보다 먼저 처리되는 WHERE 절에서 처리 -> 정렬 후 원하는 데이터를 얻기 위해서는 인라인 뷰에서 먼저 데이터 정렬을 수행한 후 메인쿼리에서 ROWNUM 조건을 사용해야 함
+    - `SELECT ENAME, SAL FROM (SELECT ENAME, SAL FROM EMP ORDER BY SAL DESC) WHERE ROWNUM < 4 ;`
+
+- TOP ()
+
+  - SQL Server는 TOP 조건을 사용하여 별도의 처리 없이 관련 ORDER BY 절의 데이터 정렬 후 원하는 일부 데이터만 출력 가능
+
+  - `TOP (Expression) [PERCENT] [WITH TIES]`
+
+    
+
+### 09. JOIN
+
+#### JOIN 개요
+
+- 두 개 이상의 테이블들을 연결 또는 결합하여 데이터를 출려가는 것
+- FROM절에 여러 테이블이 나열되더라도 SQL에서 데이터를 처리할 때는 두 개의 집합 간에만 조인이 일어남
+  -  A, B, C, D => (((A JOIN D) JOIN C) JOIN B) 뒤에서부터 앞으로 조인됨
+- 만약 테이블에 대한 ALIAS를 적용해서 SQL 문장을 작성했을 경우, WHERE 절과 SELECT 절에는 테이블명이 아닌 테이블에 대한 ALIAS를 사용해야 함
+- JOIN은 집합간의 곱 관계. m:n관계의 테이블을 조인하면 m*n레벨의 집합 생성
+
+
+
+#### EQUI JOIN
+
+- 두 개의 테이블 간에 칼럼 값들이 서로 정확하게 일치하는 경우에 사용
+- 대부분 PK <-> FK 관계를 기반으로 함
+- JOIN의 조건은 WHERE 절에 = 연산자를 사용하여 표현
+- `SELECT 테이블1.칼럼명, 테이블2.칼럼명, ... FROM 테이블1, 테이블2 WHERE 테이블1.칼럼명1 = 테이블2.칼럼명2; ` 
+- ANSI/ISO 표준방식: `SELECT 테이블1.칼럼명, 테이블2.칼럼명, ... FROM 테이블1 INNER JOIN 테이블2 ON 테이블1.칼럼명1 = 테이블2.칼럼명2;`
+- INNER JOIN에 참여하는 대상 테이블이 N개라고 했을 때, 필요한 JOIN 조건은 대상 테이블의 개수에서 하나를 뺀 N-1개 이상이 필요
+
+
+
+#### NON EQUI JOIN
+
+- 두 개의 테이블 간에 칼럼 값들이 서로 정확하게 일치하지 않는 경우에 사용
+- “=” 연산자가 아닌 다른(Between, >, >=, <, <= 등) 연산자들을 사용하여 JOIN을 수행
+
+- `SELECT 테이블1.칼럼명, 테이블2.칼럼명, ... FROM 테이블1, 테이블2 WHERE 테이블1.칼럼명1 BETWEEN 테이블2.칼럼명1 AND 테이블2.칼럼명2;`
+
+
+
+#### 3개 이상 TABLE JOIN
+
+- 관계가 없는 테이블 사이에 서로 연관관계가 있는 테이블을 추가하여 세 개의 테이블을 JOIN
+
+
+
+
+
+## 제2장 SQL 활용
+
+### 01. 표준 조인
+
+#### STANDARD SQL 개요
+
+- 현재 사용되는 데이터베이스는 대부분 SQL-2003표준
+- 일반 집합 연산자
+  - ![[그림 Ⅱ-2-1] E.F.CODD 일반 집합 연산자](https://dataonair.or.kr/publishing/img/knowledge/SQL_200.jpg)
+  - Union -> UNION: 합집합(교집합 중복 제거 정렬 발생), 이후 UNION ALL 기능 추가되어 교집합 중복 그대로 출력하여 정렬 미발생
+  - Intersection -> INTERSECT: 교집합
+  - Difference -> EXCEPT(오라클은 MINUS): 차집합
+  - Product -> CROSS JOIN(=CARTESIAN PRODUCT): 곱집합. JOIN 조건이 없는 경우 생길 수 있는 모든 데이터의 조합
+- 순수 관계 연산자: 관계형 데이터베이스를 구현하기 위해 새롭게 만들어진 연산자
+  - ![[그림 Ⅱ-2-2] E.F.CODD 순수 관계 연산자](https://dataonair.or.kr/publishing/img/knowledge/SQL_201.jpg)
+  - Select -> WHERE 절로 구현: 조건절 기능
+  - Project -> SELECT 절로 구현: 칼럼 선택 기능
+  - (Natural) JOIN -> 다양한 JOIN 으로 구현: WHERE 절의 INNER JOIN, FROM 절의 NATURAL JOIN, INNER JOIN, OUTER JOIN, USING 조건절, ON 조건절
+  - Divide -> 현재 사용되지 않음
+- 흩어진 데이터를 연결해서 원하는 데이터를 가져오는 작업이 JOIN
+
+
+
+#### FROM 절 JOIN 형태
+
+- INNER JOIN
+  - 동일한 값이 있는 행만 반환
+  - CROSS JOIN, OUTER JOIN과 같이 사용 불가
+
+- NATURAL JOIN
+  - INNER JOIN의 하위 개념. 두 테이블 간 동일한 이름을 갖는 모든 칼럼에 대해 EQUI JOIN을 수행함
+  - SQL Server는 지원 안함
+
+- USING 조건절
+  - SQL Server는 지원 안함
+
+- ON 조건절: 과거 WHERE절의 JOIN을 FROM 절의 ON 조건절로 분리하여 표시함으로써 사용자가 이해하기 쉬움. 명시적으로 JOIN 조건을 구분할 수 있고, NATURAL JOIN이나 USING 조건절처럼 칼럼명이 동일하지 않아도 조건으로 사용할 수 있음
+- CROSS JOIN
+- OUTER JOIN
+
+
+
+#### INNER JOIN
+
+- JOIN 조건에서 동일한 값이 있는 행만 반환
+- FROM절에 사용할 때는 USING 조건절이나 ON 조건절을 필수적으로 사용해야 함
+- 예제
+  - 사원 번호와 사원 이름, 소속부서 코드와 소속부서 이름을 찾아본다.
+  - WHERE 절 JOIN 조건:  `SELECT EMP.DEPTNO, EMPNO, ENAME, DNAME FROM EMP, DEPT WHERE EMP.DEPTNO = DEPT.DEPTNO;`
+  - FROM 절 JOIN 조건: `SELECT EMP.DEPTNO, EMPNO, ENAME, DNAME FROM EMP INNER JOIN DEPT ON EMP.DEPTNO = DEPT.DEPTNO; `
+
+
+
+#### NATURAL JOIN
+
+- 두 테이블 간 동일한 이름을 갖는 모든 칼럼에 대해 EQUI JOIN 수행
+- USING 조건절, ON 조건절, WHERE절의 JOIN 조건과 동시 사용 불가
+- SQL Server에서 미지원
+- `SELECT DEPTNO, EMPNO, ENAME, DNAME FROM EMP NATURAL JOIN DEPT;`
+  - 별도의 칼럼을 지정하지 않아도 같은 이름인 칼럼끼리 JOIN
+  - JOIN에 사용된 칼럼은 같은 데이터 유형이어야 함
+  - ALIAS나 테이블명과 같은 접두사 붙일 수 없음
+  -  '*' 와일드카드처럼 별도의 칼럼 순서를 지정하지 않으면 NATURAL JOIN의 기준이 되는 칼럼 들이 다른 칼럼보다 먼저 출력
+- NATURAL JOIN은 JOIN에 사용된 같은 이름의 칼럼을 하나로 처리하지만, INNER JOIN의 경우는 2개의 칼럼으로 표시
+
+
+
+#### USING 조건절
+
+- 같은 이름을 가진 칼럼들 중에서 원하는 칼럼에 대해서만 선택적으로 EQUI JOIN
+- SQL Server에서 미지원
+- ` SELECT * FROM DEPT JOIN DEPT_TEMP USING (DEPTNO);`
+- '*' 와일드카드처럼 별도의 칼럼 순서를 지정하지 않으면 USING 조건절의 기준이 되는 칼럼이 다른 칼럼보다 먼저 출력
+- JOIN에 사용된 같은 이름의 칼럼을 하나로 처리
+- USING 절의 열 부분은 식별자를 가질 수 없음
+  - Ex) `SELECT DEPT.DEPTNO, ... FROM DEPT JOIN DEPT_TEMP USING (DEPTNO);` =>  select 절에 DEPT.DEPTNO -> DEPTNO로 변경해야 함
+- USING 조건절을 이용한 JOIN에서는 JOIN 칼럼에 대해서 ALIAS나 테이블 명과 같은 접두사를 사용하면 SYNTAX 에러
+
+
+
+#### ON 조건절
+
+- JOIN 서술부(ON 조건절)와 비 JOIN 서술부(WHERE 조건절)를 분리하여 이해가 쉬우며, 칼럼명이 달라도 사용할 수 있음
+- ` SELECT E.EMPNO, E.ENAME, E.DEPTNO, D.DNAME FROM EMP E JOIN DEPT D ON (E.DEPTNO = D.DEPTNO);`
+-  ALIAS나 테이블 명과 같은 접두사를 사용하여 SELECT에 사용되는 칼럼을 논리적으로 명확하게 지정해주어야 함
+
+
+
+#### CROSS JOIN
+
+- 일반 집합 연산자의 PRODUCT 개념으로 테이블 간 JOIN 조건이 없는 경우 생길 수 있는 모든 데이터의 조합
+- 두 개의 테이블에 대한 CARTESIAN PRODUCT 또는 CROSS PRODUCT
+- 결과는 양쪽 집합의 m*n 건의 데이터 조합 발생
+- ` SELECT ENAME, DNAME FROM EMP CROSS JOIN DEPT ORDER BY ENAME;`
+
+- 데이터웨어하우스의 개별 차원을 FACT 칼럼과 JOIN하기 전에 모든 차원의 CROSS PRODUCT를 먼저 구할 때 유용
+
+
+
+#### OUTER JOIN
+
+- JOIN 조건에서 동일한 값이 없는 행도 반환할 때
+- ![[그림 Ⅱ-2-3] OUTER JOIN 설명](https://dataonair.or.kr/publishing/img/knowledge/SQL_202.jpg)
+- FROM절에서 정의하므로 USING 조건절이나 ON 조건절을 필수적으로 사용해야 함
+- LEFT/RIGHT OUTER JOIN의 경우에는 기준이 되는 테이블이 조인 수행시 무조건 드라이빙 테이블이 됨
+  - LEFT (OUTER) JOIN: Table A, B가 있을 때  'A'가 기준이 됨. B에서 가져올 때 값이 없으면 NULL로 채움
+  - RIGHT (OUTER) JOIN: Table A, B 일 때 'B'가 기준이 됨. A에서 가져올 때 값 없으면 NULL
+  - FULL (OUTER) JOIN: Table A, B 일 때 A, B 모두 기준이 됨. 중복되는 데이터는 삭제
+
+
+
+#### INNER vs OUTER vs CROSS JOIN
+
+- ![[그림 Ⅱ-2-4] INNER vs OUTER vs CROSS JOIN 문장 비교](https://dataonair.or.kr/publishing/img/knowledge/SQL_203.jpg)
+
+  - INNER JOIN -> B-B, C-C 인 2건 출력
+  - LEFT JOIN -> B-B, C-C, D-NULL, E-NULL 인 4건 출력
+  - RIGHT JOIN -> NULL-A, B-B, C-C 인 3건 출력
+  - FULL JOIN -> NULL-A, B-B, C-C, D-NULL, E-NULL 인 5건 출력
+  - CROSS JOIN -> 4 * 3 = 12건이 추출. B-A, B-B, B-C, C-A, C-B, C-C, D-A, D-B, D-C, E-A, E-B, E-C 인 12건 출력
+
+  
+
+### 02. 집합 연산자(Set Operator)
+
+- 여러 개의 질의의 결과를 연결하여 하나로 결합하는 방식
+- 서로 다른 테이블에서 유사한 형태의 결과를 반환하는 것을 하나의 결과로 합치고자 할 때, 동일한 테이블에서 서로 다른 질의를 수행하여 결과를 합치고자 할 때 사용
+- 튜닝관점에서 실행계획을 분리하고자 하는 목적으로도 사용 가능
+- 집합 연산자 사용 조건
+  - SELECT 절의 컬럼 수가 동일
+  - SELECT 절의 동일 위치에 존재하는 칼럼의 데이터 타입이 상호 호환 가능
+- ![[표 Ⅱ-2-1] 집합 연산자의 종류](https://dataonair.or.kr/publishing/img/knowledge/SQL_204.jpg)
+- ![[그림 Ⅱ-2-5] 집합 연산자의 연산](https://dataonair.or.kr/publishing/img/knowledge/SQL_205.jpg)
+  - EXCEPT: 차집합. 앞의 집합 결과 - 뒤의 집합 결과 (순서주의!)
+    - 오라클에서는 MINUS 연산자 사용(NOT EXISTS 또는 NOT IN 서브쿼리로 변경 가능)
+- `SELECT 칼럼명1, 칼럼명2, ... FROM 테이블명1 [WHERE 조건식] [[GROUP BY 칼럼(Column)이나 표현식 [HAVING 그룹조건식]] 집합 연산자 SELECT 칼럼명1, 칼럼명2, ... FROM 테이블명2 [WHERE 조건식] [[GROUP BY 칼럼(Column)이나 표현식 [HAVING 그룹조건식] ] [ORDER BY 1, 2 [ASC또는 DESC] ; `
+
+
+
+### 03. 계층형 질의와 셀프 조인
+
+#### 계층형 질의(Hierarchical Query)
+
+- 테이블에 계층형 데이터가 존재하는 경우에 데이터를 조회할 때
+
+- 계층형 데이터: 동일 테이블에 계층적으로 상위와 하위 데이터가 포함된 데이터
+
+- ![[그림 Ⅱ-2-6] 계층형 데이터](https://dataonair.or.kr/publishing/img/knowledge/SQL_206.jpg)
+
+- 엔티티를 순환관계 데이터 모델로 설계할 경우 계층형 데이터가 발생함
+
+- Oracle 계층형 질의
+
+  - ```sql
+    SELECT ... 
+    FROM 테이블
+    WHERE 조건 AND 조건 ...
+    START WITH 조건
+    CONNECT BY [NOCYCLE] 조건 AND 조건 ...
+    [ORDER SIBLINGS BY 칼럼, 칼럼, ...]
+
+  - START WITH 절(액세스): 계층 구조 전개의 시작 위치를 지정하는 구문. 루트 데이터 지정
+
+  - CONNECT BY 절(조인): 다음에 전개될 자식 데이터를 지정하는 구문
+
+    - 자식 데이터는 CONNECT BY 절 조건을 만족해야 함
+    - PRIOR: CONNECT BY 절에 사용. 현재 읽은 칼럼을 지정함
+      - `PRIOR 부모=자식`: 자식 -> 부모 방향으로 역방향 전개
+      - `PRIOR 자식=부모`: 부모 -> 자식 방향으로 순방향 전개
+      - 루트 및 레벨은 전개되는 방향에 따라 반대가 될 수 있음
+
+  - NOCYCLE: 사이클이 발생한 이후의 데이터는 전개하지 않음
+
+    - 데이터를 전개하면서 이미 나타났던 동일한 데이터가 전개 중 다시 나타나는 것이 사이클이 형성된 것 => 런타임 오류 발생
+
+  - ORDER SIBLINGS BY: 형제 노드 사이에서 정렬 수행
+
+  - WHERE: 모든 전개 후 지정된 조건을 만족하는 데이터만 추출(필터링 역할)
+
+  - ![[표 Ⅱ-2-2] 계층형 질의에서 사용되는 가상 칼럼](https://dataonair.or.kr/publishing/img/knowledge/SQL_208.jpg)
+
+  - ![[표 Ⅱ-2-3] 계층형 질의에서 사용되는 함수](https://dataonair.or.kr/publishing/img/knowledge/SQL_211.jpg)
+
+- SQL Server의 계층형 질의
+
+  - 둘 중 위에 있는 쿼리를 ‘앵커 멤버’(Anchor Member)라고 하고, 아래에 있는 쿼리를 ‘재귀 멤버’(Recursive Member)
+  - 재귀적 쿼리의 처리 과정
+    1. CTE 식을 앵커 멤버와 재귀 멤버로 분할한다. 
+    2. 앵커 멤버를 실행하여 첫 번째 호출 또는 기본 결과 집합(T0)을 만든다. 
+    3. Ti는 입력으로 사용하고 Ti+1은 출력으로 사용하여 재귀 멤버를 실행한다. 
+    4. 빈 집합이 반환될 때까지 3단계를 반복한다. 
+    5. 결과 집합을 반환한다. 이것은 T0에서 Tn까지의 UNION ALL이다.
+  - 앵커 멤버가 시작점이자 Outer 집합이 되어 Inner 집합인 재귀 멤버와 조인을 시작 -> 앞서 조인한 결과가 다시 Outer 집합이 되어 재귀 멤버와 조인을 반복하다가 조인 결과가 비어 있으면(=더 조인할 수 없으면) -> 지금까지 만들어진 결과 집합을 모두 합하여 리턴
+  - CTE 재귀 호출로 만들어낸 계층 구조는 실제와 다른 모습으로 출력 ->  order by 절을 추가해 원하는 순서대로 결과를 정렬해야 함
+
+
+
+#### 셀프 조인(Self JOIN)
+
+- 동일 테이블 사이의 조인. FROM절에 동일 테이블이 두 번 이상 나타남
+- 동일 테이블 사이의 조인은 테이블과 칼럼 이름이 모두 동일하기 때문에 식별을 위해 반드시 테이블과 칼럼 모두에 ALIAS를 사용하여 식별해줘야 함
+- `SELECT ALIAS명1.칼럼명, ALIAS명2.칼럼명, ... FROM 테이블1 ALIAS명1, 테이블2 ALIAS명2 WHERE ALIAS명1.칼럼명2 = ALIAS명2.칼럼명1;`
+- INNER JOIN을 사용할 경우 상위 레벨이 없으면 조인할 대상이 존재하지 않기 때문에 해당 데이터는 결과에서 누락됨 -> OUTER JOIN을 사용하여 레벨 1 데이터까지 포함
+
+
+
+### 04. 서브쿼리(Subquery)
+
+- 하나의 SQL문 안에 포함되어 있는 또 다른 SQL문
+- 알려지지 않은 기준을 이용한 검색을 위해 사용
+- 서브쿼리의 특징
+  - 서브쿼리는 메인쿼리의 칼럼을 모두 사용 가능하나 메인쿼리는 서브쿼리의 칼럼을 사용 불가
+  - 서브쿼리 칼럼을 표시해야 한다면 조인 방식으로 변환하거나 함수, 스칼라 서브쿼리 등을 사용해야 함
+  - 서브쿼리는 서브쿼리 레벨과는 상관없이 항상 메인쿼리 레벨로 결과 집합 생성
+- 서브쿼리 사용 시 주의사항
+  - 서브쿼리를 괄호로 감싸서 사용
+  - 서브쿼리는 단일행 또는 복수행 비교 연산자와 함께 사용 가능
+    - 단일행 비교 연산자는 서브쿼리 결과가 반드시 1건
+    - 복수행 비교 연산자는 서브쿼리 결과 건수와 상관 없음
+  - 서브쿼리에서는 ORDER BY 사용 불가
+- 서브쿼리 사용 가능 위치
+  - SELECT
+  - FROM
+  - WHERE
+  - HAVING
+  - ORDER BY
+  - INSERT문의 VALUE절
+  - UPDATE문의 SET절
+- 서브쿼리 종류
+  - ![[표 Ⅱ-2-4] 동작하는 방식에 따른 서브쿼리 분류](https://dataonair.or.kr/publishing/img/knowledge/SQL_215.jpg)
+- 서브쿼리는 메인쿼리 안에 포함된 종속적인 관계이므로 논리적인 실행순서는 항상 메인쿼리 -> 서브쿼리여야 함. 그러나 실제 서브쿼리의 실행순서는 상황에 따라 달라질 수 있음
+  - ![[표 Ⅱ-2-5] 반환되는 데이터의 형태에 따른 서브쿼리 분류](https://dataonair.or.kr/publishing/img/knowledge/SQL_216.jpg)
+
+
+
+#### 단일 행 서브쿼리
+
+- 단일 행 비교 연산자(=, <, <=, >, <=, <>)와 함께 사용
+- 서브쿼리 결과 건수가 반드시 1건
+
+
+
+#### 다중 행 서브쿼리
+
+- 서브쿼리의 결과가 2건 이상
+- 다중 행 비교 연산자(IN, ALL, ANY, SOME)와 함께 사용
+- ![[표 Ⅱ-2-6] 다중 행 비교 연산자](https://dataonair.or.kr/publishing/img/knowledge/SQL_219.jpg)
+
+
+
+#### 다중 칼럼 서브쿼리
+
+- 서브쿼리 결과로 여러 개의 칼럼이 반환되어 메인쿼리 조건과 동시에 비교되는 것
+- SQL Server에서 미지원
+- 예제
+  - 소속팀별 키가 가장 작은 사람들의 정보
+  - `SELECT TEAM_ID 팀코드, PLAYER_NAME 선수명, POSITION 포지션, BACK_NO 백넘버, HEIGHT 키 FROM PLAYER WHERE (TEAM_ID, HEIGHT) IN (SELECT TEAM_ID, MIN(HEIGHT) FROM PLAYER GROUP BY TEAM_ID) ORDER BY TEAM_ID, PLAYER_NAME;`
+
+
+
+#### 연관 서브쿼리(Correlated Subquery)
+
+- 서브쿼리 내에 메인쿼리 칼럼이 사용된 서브쿼리
+- EXISTS 서브쿼리는 항상 연관 서브쿼리
+
+
+
+#### 그밖에 위치에서 사용하는 서브쿼리
+
+- SELECT 절에서 사용하는 스칼라 서브쿼리(Scalar Subquery)
+  - 한 행, 한 칼럼만을 반환하는 서브쿼리
+  - 칼럼을 쓸 수 있는 대부분의 곳에서 사용가능
+  - 단일 행 서브쿼리
+- FROM 절에서의 서브쿼리 =  인라인 뷰(Inline View)
+  - FROM + 테이블명 -> 서브쿼리가 FROM 뒤에 오면 서브쿼리 결과가 실행 시에 동적으로 생성된 테이블인 것처럼 사용할 수 있음
+  - 인라인 뷰는 임시적으로 생성되는 동적인 뷰이기 때문에 데이터베이스에 저장되지 않음
+  - 테이블명이 올 수 있는 곳에서 사용 가능
+  - 인라인 뷰는 조인 방식을 사용하는 것과 같기 때문에 인라인 뷰의 칼럼은 메인쿼리에서도 자유롭게 참조할 수 있음
+  - ORDER BY절 사용 가능
+  - TOP-N쿼리: 인라인 뷰에 먼저 정렬을 수행하고 정렬 결과 중 일부 데이터를 추출하는 것
+  - Oracle에서는 ROWNUM 연산자를 통해서 결과로 추출하고자 하는 데이터 건수 제한 가능
+- HAVING 절에서의 서브쿼리
+  - HAVING 절은 그룹함수와 함께 사용될 때 그룹핑된 결과에 부가적인 조건을 주기 위해 사용됨
+  - `SELECT ... GROUP BY P.TEAM_ID, T.TEAM_NAME HAVING AVG(P.HEIGHT) < (SELECT AVG(HEIGHT) FROM PLAYER WHERE TEAM_ID ='K02')`
+- UPDATE 문의 SET 절에서의 서브쿼리
+- INSERT 문의 VALUES절에서의 서브쿼리
+
+
+
+#### 뷰(VIEW) = 가상 테이블(Virtual Table)
+
+- 테이블은 실제로 데이터를 가지고 있으나 뷰는 실제 데이터를 가지고 있지 않음
+- 뷰는 View Definition만을 가지고 있음
+- 질의에서 뷰가 사용되면 뷰 정의를 참조하여 내부적으로 질이를 재작성 하여 질의 수행
+- ![[표 Ⅱ-2-7] 뷰 사용의 장점](https://dataonair.or.kr/publishing/img/knowledge/SQL_221.jpg)
+- `CREATE VIEW V_PLAYER_TEAM AS SELECT P.PLAYER_NAME, P.POSITION, P.BACK_NO, P.TEAM_ID, T.TEAM_NAME FROM PLAYER P, TEAM T WHERE P.TEAM_ID = T.TEAM_ID;`
+- 뷰 제거는 `DROP VIEW 테이블명`
+
+
+
+###  05. 그룹 함수
+
+#### 데이터 분석 개요
+
+- 데이터 분석을 위한 함수
+  - AGGREGATE FUNCTION: 각종 집계 함수 포함
+  - GROUP FUNCTION
+    - 하나의 SQL로 테이블을 한 번만 읽어서 빠르게 원하는 레벨별 리포트를 작성할 수 있음
+    - 소그룹 간의 소계를 계산하는 GROUP BY함수, ROLLUP 함수(group by의 확장된형태, 병렬 수행 가능, 계층적 데이터 집계 가능), CUBE 함수(결합 가능한 모든 값에 대한 다차원적 집계), GROUPING SETS 함수(원하는 부분의 소계만 추출)
+    - ROLLUP, CUBE, GROUPING SETS 결과에 대한 정렬이 필요한 경우는 ORDER BY 절에 정렬 칼럼 명시
+  - WINDOW FUNCTION
+    - =분석 함수나 순위 함수
+    - 데이터웨어하우스에서 발전한 기능
+
+
+
+#### ROLLUP 함수
+
+-  ROLLUP에 지정된 그룹핑 칼럼의 리스트는 Subtotal을 생성하기 위해 사용됨
+- 그룹핑 칼럼의 수가 n일 때 n+1 레벨의 Subtotal이 생성됨
+- ROLLUP의 인수는 계층 구조이므로 인수 순서가 바뀌면 수행 결과도 바뀜
+- GROUP BY와 비슷
+- ` SELECT DNAME, JOB, COUNT(*) "Total Empl", SUM(SAL) "Total Sal" FROM EMP, DEPT WHERE DEPT.DEPTNO = EMP.DEPTNO GROUP BY ROLLUP (DNAME, JOB) ORDER BY DNAME, JOB ;`
+  - 실행 결과에서 2개의 GROUPING COLUMNS(DNAME, JOB)에 대하여 다음과 같은 추가 LEVEL의 집계가 생성된 것을 볼 수 있다.
+  - L1 - GROUP BY 수행시 생성되는 표준 집계 (9건) L2 - DNAME 별 모든 JOB의 SUBTOTAL (3건) L3 - GRAND TOTAL (마지막 행, 1건)
+- GROUPING 함수 사용
+  - ROLLUP이나 CUBE에 의한 소계가 계산된 결과에는 GROUPING(EXPR) = 1,  그 외의 결과에는 GROUPING(EXPR) = 0 반환
+  - GROUPING 함수와 CASE/DECODE를 이용해, 소계를 나타내는 필드에 원하는 문자열을 지정할 수 있어, 보고서 작성시 유용
+  - `SELECT DNAME, GROUPING(DNAME), JOB, GROUPING(JOB), COUNT(*) "Total Empl", SUM(SAL) "Total Sal" FROM EMP, DEPT WHERE DEPT.DEPTNO = EMP.DEPTNO GROUP BY ROLLUP (DNAME, JOB);`
+- ROLLUP 함수 사용시 괄호로 묶은 경우 하나의 집합(JOB+MGR) 칼럼으로 간주하여 괄호 내 각 칼럼별 집계를 구하지 않음
+
+
+
+#### CUBE 함수
+
+- 결합 가능한 모든 값에 대하여 다차원 집계 생성
+- 내부적으로는 그룹핑 칼럼의 순서를 바꾸어서 또 한 번의 질의를 추가 수행해야 함
+- Grand Total은 양쪽의 질의에서 모두 생성되므로 한 번의 질의에어는 제거되어야 해서 시스템 연산 대상이 많음
+- 표시된 인수들에 대한 계층별 집계를 구할 수 있음. 이 때의 인수는 평등한 관계이므로 인수의 순서가 바뀌는 경우에도 데이터 결과는 동일함
+- 정렬이 필요한 경우 ORDER BY로 명시적 정렬 필요
+- 그룹핑 칼럼이 n개이면 2의 n제곱 레벨의 Subtotal 생성
+- UNION ALL과 비숫
+- 반복적인 액세스를 한 번에 구현하여 효과적
+
+
+
+#### GROUPING SETS 함수
+
+- GROUP BY SQL문장을 여러 번 반복하지 않아도 원하는 결과를 얻을 수 있음
+- 인수들에 대한 개별 집계를 구할 수 있으며, 인수는 평등 관계이므로 순서가 바뀌어도 결과 동일
+- 정렬이 필요한 경우 ORDER BY 필요
+- UNION ALL을 사용한 일반 그룹함수와 같은 결과
+
+
+
+###  06. 윈도우 함수(WINDOW FUNCTION)
+
+#### WINDOW FUNCTION 개요
+
+- 행과 행간의 복잡한 처리를 쉽게 하기 위해 만든 함수
+- 분석 함수, 순위 함수라고도 함
+- 데이터웨어하우스에서 발전한 기능
+- 중첩해서 사용하지 못하지만 서브쿼리에서는 윈도우 함수 사용할 수 있음
+- Window Function 종류
+  - 순위 관련: RANK, DENSE_RANK, ROW_NUMBER 함수
+  - 집계 관련: SUM, MAX, MIN, AVG, COUNT 함수
+  - 행 순서 관련: FIRST_VALUE, LAST_VALUE, LAG, LEAD 함수
+  - 비율 관련: CUME_DIST, PERCENT_RANK, NTILE, RATIO_TO_REPORT 함수
+  - 통계 분석 관련: CORR, COVAR_POP, COVAR_SAMP, STDDEV, STDDEV_POP, STDDEV_SAMP, VARIANCE, VAR_POP, VAR_SAMP, REGR_(LINEAR REGRESSION), REGR_SLOPE, REGR_INTERCEPT, REGR_COUNT, REGR_R2, REGR_AVGX, REGR_AVGY, REGR_SXX, REGR_SYY, REGR_SXY
+
+- Window Function SYNTAX
+  - 윈도우 함수에는 OVER 문구가 키워드로 필수
+  - `SELECT WINDOW_FUNCTION (ARGUMENTS) OVER ( [PARTITION BY 칼럼] [ORDER BY 절] [WINDOWING 절] ) FROM 테이블 명;`
+  - ARGUMENTS (인수) : 함수에 따라 0 ~ N개의 인수 지정
+  - PARTITION BY 절 : 전체 집합을 기준에 의해 소그룹으로 나누기
+  - WINDOWING 절 : 함수의 대상이 되는 행 기준의 범위를 강력하게 지정(SQL Server 미지원)
+  - ROWS는 물리적인 결과 행의 수를, RANGE는 논리적인 값에 의한 범위. 둘 중 하나만 사용 가능
+
+
+
+#### 그룹 내 순위 함수
+
+- RANK 함수
+  - 특정 항목에 대한 순위를 구하는 함수. 특정 범위 내 또는 전체 데이터에 대한 순위 모두 가능
+  - 동일한 값은 동일한 순위 부여
+- DENSE_RANK 함수
+  - 동일한 순위를 하나의 건수로 취급(Ex. 2등이 두 명이면 다음 순위는 4등)
+- ROW_NUMBER함수
+  - 동일한 값이라도 고유한 순위 부여
+
+
+
+#### 일반 집계 함수
+
+- SUM 함수
+  - 파티션별 윈도우의 합 계산 가능
+  - `SELECT MGR, ENAME, SAL, SUM(SAL) OVER (PARTITION BY MGR) MGR_SUM FROM EMP;`
+- MAX 함수: 파티션별 윈도우의 최댓값 계산 가능
+- MIN 함수: 파티션별 윈도우의 최솟값 계산 가능
+- AVG 함수: AVG와 파티션별 ROWS 윈도우를 이용해 원하는 조건의 데이터 평균값 계산 가능
+- COUNT 함수: COUNT와 파티션별 ROWS 윈도우를 이용해 원하는 조건의 데이터 건수 계산
+
+
+
+#### 그룹 내 행 순서 함수
+
+- FIRST_VALUE
+  - 파티션별 윈도우에서 가장 먼저 나온 값 반환
+  - MIN 함수와 비슷한 결과
+  - SQL Server 미지원
+- LAST_VALUE
+  - 파티션별 윈도우에서 가장 나중에 나온 값 반환
+  - MAX 함수와 비슷한 결과
+  - SQL Server 미지원
+- LAG 함수
+  - 파티션별 윈도우에서 이전 몇 번째 행의 값 반환
+  - SQL Server 미지원
+  - LAG 함수는 최대 3개의 arguments, 두 번째 인자는 몇 번째 앞의 행을 가져올지 결정하는 것이고 (DEFAULT 1), 세 번째 인자는 가져올 데이터가 없어 NULL 값이 들어올 경우 다른 값으로 변경 -> 결과적으로 NVL이나 ISNULL 기능과 같음
+- LEAD 함수
+  - 파티션별 윈도우에서 이후 몇 변째 행의 값 반환
+  - SQL Server 미지원
+  - 최대 3개의 arguments, 두 번째 인자는 몇 번째 후의 행을 가져올지 결정하는 것이고 (DEFAULT 1), 세 번째 인자는 가져올 데이터가 없어 NULL 값이 들어올 경우 다른 값으로 변경 -> 결과적으로 NVL이나 ISNULL 기능과 같음
+
+
+
+#### 그룹 내 비율 함수
+
+- RATIO_TO_REPORT 함수
+  - 파티션 내 전체 SUM(칼럼)값에 대한 행별 칼럼 값의 백분율을 소수점으로 반환
+  - 0 < 결과값 <= 1
+  - 개별 RATIO의 합 = 1
+  - SQL Server 미지원
+- PERCENT_RANK 함수
+  - 파티션별 윈도우에서 제일 먼저 나오는 것을 0, 늦게 나오는 것을 1로 하여 값이 아닌 행의 순서별 백분율 반환
+  - 0 <= 결과값 <= 1
+  - SQL Server 미지원
+- CUME_DIST 함수
+  - 파티션별 윈도우의 전체건수에서 현재 행보다 작거나 같은 건수에 대한 누적백분율 반환
+  - 0< 결과값 <= 1
+  - SQL Server 미지원
+  - 다른 윈도우 함수와 달리 동일 순서면 뒷 행의 함수 결과값을 기준으로 함
+- NTILE 함수
+  - 파티션별 전체건수를 argument 값으로 n등분한 결과 반환
+  - 집합을 등분할 때 나머지는 앞에서부터 할당
+
+###  07. DCL
+
+- 유저를 생성하고 권한을 제어할 수 있는 명령어
+
+
+
+#### 유저와 권한
+
+- 오라클
+  - 오라클에서 제공하는 유저들
+    - SCOTT: 오라클 테스트용 샘플 유저. DEFAULT 패스워드: TIGER
+    - SYS: DBA ROLE을 부여받은 유저
+    - SYSTEM: 데이터베이스의 모든 시스템 권한을 부여받은 DBA 유저. 오라클 설치 완료 시에 패스워드 설정
+  - 오라클은 유저를 통해 데이터베이스에 접속하는 형태. =아이디와 비밀번호 방식으로 인스턴스에 접속하고, 그에 해당하는 스키마에 오브젝트 생성 등의 권한을 부여 받음
+- SQL Server
+  - SQL 서버는 인스턴스에 접속하기 위해 로그인을 생성하며, 인스턴스 내에 존재하는 다수의 데이터베이스에 연결하여 작업하위해 유저를 생성한 후 로그인과 유저를 매핑해야 함
+  - 로그인 방식
+    - Window 인증 방식: 윈도우에 로그인한 정보로 서버에 접속. 운영 체제의 윈도우 보안 주체 토큰을 사용하여 계정 이름과 암호의 유효성 확인
+      - SQL 서버는 암호를 요청하지 않으며 ID 유효성 검사를 수행하지 않음
+      - 윈도우 인증은 기본 인증 모드이며 SQL Server 인증보다 더 안전함
+      - Kerberos 보안 프로토콜 사용, 암호 정책 적용(복잡성 수준 유지), 계정 잠금 및 암호 만료 지원
+    - 혼합 모드 방식: 기본적으로 윈도우 인증으로도 서버에 접속 가능하며, 오라클 처럼 사용자 아이디와 비밀번호로 서버에 접속하는 방식
+      - SQL 인증을 사용할 때에는 강력한 암호 사용해야 함
+- 유저 생성과 권한 부여
+  - 유저 생성 후 시스템 권한을 부여해야만 모든 DDL 문장을 수행할 수 있음
+  - 롤(ROLE)을 이용하여 권한 부여
+  - 유저 생성 권한(CREATE USER)는 초기에 SYSTEM 유저에게만 있음
+    - `Oracle GRANT CREATE USER TO SCOTT;`
+  - 로그인을 생성할 수 있는 권한을 가진 로그인은 기본적으로 sa
+  - SQL Server에서의 유저는 데이터베이스마다 존재 -> 유저가 속할 데이터베이스로 이동한 후 처리해야 함
+- OBJECT에 대한 권한 부여
+  - 오브젝트 권한: 특정 오브젝트인 테이블, 뷰 등에 대한 SELECT, INSERT, DELETE, UPDATE 작업 명령어
+  - 다른 유저가 소유한 객체에 접근하기 위해서는 객체 앞에 객체를 소유한 유저의 이름을 붙여서 접근
+  - SQL Server는 객체 앞에 소유한 유저의 이름을 붙이는 것이 아니고 객체가 속한 스키마 이름을 붙여야 함
+
+
+
+#### ROLE을 이용한 권한 부여
+
+- 많은 데이터베이스에서 유저들과 권한들 사이에서 중개 역할을 하는 ROLE을 제공
+
+- 데이터베이스 관리자는 ROLE을 생성하고, ROLE에 각종 권한들을 부여한 후 ROLE을 다른 ROLE이나 유저에게 부여
+
+- ROLE에는 시스템 권한과 오브젝트 권한을 모두 부여할 수 있으며, ROLE은 유저에게 직접 부여될 수도 있고, 다른 ROLE에 포함하여 유저에게 부여될 수도 있음
+
+- 오라클에서 자주 사용하는 ROLE
+
+  - | CONNECT              | RESOURCE             |
+    | -------------------- | :------------------- |
+    | ALTER SESSION        | CREATE CLUSTER       |
+    | CREATE CLUSTER       | CREATE INDEXTYPE     |
+    | CREATE DATABASE LINK | CREATE OPERATOR      |
+    | CREATE MENU_SEQUENCE | CREATE PROCEDURE     |
+    | CREATE SESSION       | CREATE MENU_SEQUENCE |
+    | CREATE SYNONYM       | CREATE TABLE         |
+    | CREATE TABLE         | CREATE TRIGGER       |
+    | CREATE VIEW          | CREATE               |
+
+  - 유저 삭제 명령어는  `DROP USER`
+    - CASCADE 옵션을 주면 해당 유저가 생성한 오브젝트 먼저 삭제 후 유저 삭제
+
+- SQL Server의 권한 부여
+
+  - 기본적으로 제공되는 ROLE에 멤버로 참여하는 방식
+
+  - ![[표 Ⅱ-2-12] 서버 수준 역할명 (SQL Server 사례)](https://dataonair.or.kr/publishing/img/knowledge/SQL_228.jpg)
+
+  - ![[표 Ⅱ-2-13] 데이터베이스 수준 역할명 (SQL Server 사례)](https://dataonair.or.kr/publishing/img/knowledge/SQL_229.jpg)
+
+    
+
+###  08. 절차형 SQL
+
+- 절차 지향적인 프로그램이 가능하도록 벤더별로 PL/SQL(Oracle), SQL/PL(DB2), T-SQL(SQL Server) 등 절차형 SQL을 제공
+- 절차형 SQL을 이용하면 SQL문의 연속적 실행이나 조건에 따른 분기처리를 이용하여 특정 기능을 수행하는 저장 모듈을 생성할 수 있음
+
+
+
+#### PL/SQL(Oracle) 개요
+
+- Black 구조 => 각 기능별로 모듈화 가능
+  - Black 내에 DML 문장, QUERY 문장, 절차형 언어(IF, LOOP) 등 사용 가능
+- 절차적 프로그래밍을 가능하게 하는 트랜잭션 언어
+- 저장 모듈 개발 가능
+  - 저장 모듈: PL/SQL 문장을 데이터베이스 서버에 저장하여 사용자와 애플리케이션 사이에서 공유할 수 있도록 만든 컴포넌트 프로그램. 독립적으로 실행되거나 다른 프로그램으로부터 실행될 수 있는 완전한 실행 프로그램
+  - 오라클의 저장모듈에는 Procedure, User Defined Function, Trigger
+- 특징
+  - Black 구조로 되어 있어 각 기능별로 모듈화 가능
+  - 변수, 상수 등을 선언하여 SQL 문장 간 값을 교환
+  - 절차형 언어를 사용하여 절자척 프로그램 가능
+  - DBMS 정의 에러나 사용자 정의 에러를 정의하여 사용 가능
+  - 오라클과 PL/SQL을 지원하는 서버로 프로그램 옮길 수 있음
+  - 응용 프로그램 성능 향상
+  - 여러 SQL 문장을 Black으로 묶고 한번에 서버로 보내어 통신량 감소시킴
+  - SELECT 문장은 결과값이 반드시 있어야 하며, 결과는 반드시 하나여야 함. 조회 결과가 없거나 하나 이상이면 에러 발생
+  - ![[그림 Ⅱ-2-18] Oracle의 PL/SQL 엔진](https://dataonair.or.kr/publishing/img/knowledge/SQL_230.jpg)
+    - SQL 문장과 프로그램 문장을 구문하여 처리함
+- 구조
+  - ![[그림 Ⅱ-2-19] PL/SQL 블록 구조](https://dataonair.or.kr/publishing/img/knowledge/SQL_231.jpg)
+- 기본 문법
+  - CREATE 명령어로 데이터베이스 내에 프로시저 생성
+    - 프로시저: 개발자가 자주 실행해야 하는 로직을 절차적인 언어를 이용하여 작성한 프로그램 모듈. 필요할 때 호출하여 실행할 수 있음
+  - `CREATE [OR REPLACE] Procedure [Procedure_name] ( argument1 [mode] data_type1, argument2 [mode] date_type2, ... ... ) IS [AS] ... ... BEGIN ... ... EXCEPTION ... ... END; /`
+    - [OR REPLACE]: 데이터베이스 내에 같은 이름의 프로시저가 있을 경우 덮어쓰기
+    - argement: 프로시저가 호출될 때 프로시저 안으로 어떤 값이 들어오거나 또는 프로시저에서 처리한 결과값을 운영 체제로 리턴시킬 매개 변수를 지정할 때 사용
+    - [mode]: 3가지 매개 변수 유형
+      - IN: 운영 체제에서 프로시저로 전달될 변수의 MODE
+      - OUT: 프로시저에서 처리된 결과가 운영체제로 전달되는 MODE
+      - INOUT: IN과 OUT 두 가지 기능을 동시에 수행
+    - / : 데이터베이스에게 프로시저를 컴파일 하라는 명령어
+  - 생성된 프로시저 삭제: `DROP Procedure [Procedure_name];`
+  - 대입 연산자 ':=' 사용
+
+
+
+#### T-SQL 개요
+
+- 특징
+
+  - SQL Server를 제어하기 위한 언어	
+  - 변수 선선 기능
+    - @@ 이라는 전역변수(시스템 함수)와 @ 이라는 지역변수 존재
+    - 지역변수는 사용자가 자신의 연결 시간 동안만 사용하기 위해 만들어지는 변수, 전역변수는 SQL 서버에 내장된 값
+  - 데이터 유형 제공
+    - int, float, varchar 등의 자료형
+  - 연산자, 산술연산자, 비교연산자, 논리연산자 사용 가능
+  - 흐름제어 기능
+    - IF-ELSE, WHILE, CASE-THEM 사용 가능
+  - 주석 기능
+    - 한 줄 주석: -- 주석내용
+    - 여러 줄 주석 /* 주석 내용 */
+
+- 구조
+
+  - ![[그림 Ⅱ-2-20] T-SQL 구조](https://dataonair.or.kr/publishing/img/knowledge/SQL_232.jpg)
+    - SQL Server에서 BEGIN, END 문은 필수는 아니나 블록 단위로 처리할 때에는 반드시 필요
+
+- 기본 문법
+
+  - `CREATE Procedure [schema_name.]Procedure_name @parameter1 data_type1 [mode], @parameter2 date_type2 [mode], ... ... WITH?AS ... ... BEGIN ... ... ERROR 처리 ... ... END;`
+    - 프로시저의 변경이 필요할 경우 CREATE 구문을 ALTER 구문으로 변경해야 함
+    - @parameter: 프로시저가 호출될 때 프로시저 안으로 어떤 값이 들어오거나 또는 프로시저에서 처리한 결과 값을 리턴시킬 매개 변수를 지정할 때 사용
+    - [mode]: 4가지 유형
+      - VARYING: 결과 집합이 출력 매개 변수로 사용되도록 지정. CURSOR 매개변수에만 적용됨
+      - DEFAULT: 지정된 매개 변수가 프로시저를 호출할 당시 지정되지 않았을 경우, 지정된 기본값으로 처리
+      - OUT, OUTPUT: 프로시저에서 처리된 결과값을 EXECUTE 문 호출 시 반환
+      - READONLY: 자주 사용되지 않음. 프로시저 본문 내에서 매개 변수를 업데이트하거나 수정할 수 없음
+    - WITH: 3가지 옵션
+      - RECOMPILE: 데이터베이스 엔진에서 현재 프로시저의 계획을 캐시하지 않고 프로시저가 런타임에 컴파일 됨. 개별 쿼리 계획을 삭제하려고 할 때 recomplie 쿼리 힌트 사용
+      - ENCRYPTION: CREATE PROCEDURE문의 원본 텍스트가 알아오기 어려운 형식으로 변환. 변조된 출력은 카탈로크 뷰에서 직접 표시되지 않기 때문에 원본을 반드시 백업 해두어야 함
+      - EXECUTE AS: 해당 저장 프로시저를 실행할 보안 컨텍스트를 지정
+
+  - 프로시저 삭제 명령어: `DROP Procedure [schema_name.]Procedure_name;`
+  - 대입 연산자: '=' 사용
+
+- T-SQL로 작성한 프로시저 실행을 위해서 일반적으로 기본 클라이언트 프로그램인 SQL Server MANAGEMENT STUDIO 사용
+
+
+
+#### PROCEDURE 생성과 활용
+
+- Procedure의 기능
+  - ![[그림 Ⅱ-2-21] 부서 입력 FLOW CHART](https://dataonair.or.kr/publishing/img/knowledge/SQL_233.jpg)
+
+
+
+#### User Defined Fuction의 생성과 활용
+
+- Procedure처럼 절차형 SQL을 로직과 함께 데이터베이스 내에 저장해놓은 명령문의 집합
+- Procedure와 다른점: RETURN을 사용하여 하나의 값을 반드시 반환해야 함
+
+
+
+#### Trigger의 생성과 활용
+
+- Trigger: 특정한 테이블에 INSERT, UPDATE, DELETE와 같은 DML문이 수행되었을 때 데이터베이스에서 자동으로 동작하도록 작성된 프로그램
+- 테이블, 뷰, 데이터베이스 작업을 대상으로 정의할 수 있음
+- 전체 트랜잭션 작업에 대해 발생되는 Trigger와 각 행에 대해서 발생되는 Trigger로 구분
+- Ex) 트리거를 사용하여 주문건이 입력될 때마다 일자별 상품별로 판매수량과 판매금액을 집계하여 집계자료 보관
+- Trigger에서 사용하는 레코드 구조(OLD, NEW)
+  - INSERT(NULL, 입력된 레코드 값)
+  - UPDATE(전 레코드 값, 후 레코드 값)
+  - DELETE(삭제 전 값, NULL)
+
+
+
+#### 프로시저와 트리거의 차이점
+
+- | 프로시저                   | 트리거                     |
+  | :------------------------- | :------------------------- |
+  | CREATE Procedure 문법사용  | CREATE Trigger 문법사용    |
+  | EXECUTE 명령어로 실행      | 생성 후 자동으로 실행      |
+  | COMMIT, ROLLBACK 실행 가능 | COMMIT, ROLLBACK 실행 안됨 |
+
+
+
+
+
+## 제3장 SQL 최적화 기본 원리
+
+### 01. 옵티마이저와 실행계획
+
+#### 옵티마이저(Optimizer)
+
+- 사용자가 질의한 SQL문에 대해 다양한 방법 중 최적의 실행 방법을 결정
+
+- 최적의 실행 방법 = 실행계획(Execution Plan)
+
+- 옵티마이저가 선택한 실행 방법의 적절성 여부는 질의의 수행 속도에 가장 큰 영향을 미침
+
+- 옵티마이저의 구분
+
+  - ![[그림 Ⅱ-3-1] 옵티마이저의 종류](https://dataonair.or.kr/publishing/img/knowledge/SQL_239.jpg)
+  - 대부분의 관계형 데이터베이스는 비용기반 옵티마이저만 제공
+
+- 규칙기반 옵티마이저
+
+  - 규칙(우선 순위)을 가지고 실행계획 생성
+  - 비교적 쉽게 예측 가능
+  - 참조하는 정보
+    - SQL문을 실행하기 위해서 이용 가능한 인덱스 유무와 (유일, 비유일, 단일, 복합 인덱스) 종류
+    - SQL문에서 사용하는 연산자 종류
+    - SQL문에서 참조하는 객체(힙 테이블, 클러스터 테이블 등) 종류
+  - 우선 순위가 높고 규칙이 적은 일량으로 해당 작업을 수행하는 방법
+  - 우선 순위 규칙
+    - 규칙 1. Single row by rowid
+      - ROWID를 통해서 테이블에서 하나의 행을 액세스하는 방식
+      - ROWID는 행이 포함된 데이터 파일, 블록 등의 정보를 가지고 있기 때문에 다른 정보를 참조하지 않고도 바로 원하는 행을 액세스 
+    - 규칙 4. Single row by unique or primary key 
+      - 유일 인덱스(Unique Index)를 통해서 하나의 행을 액세스하는 방식
+      - 방식은 인덱스를 먼저 액세스하고 인덱스에 존재하는 ROWID를 추출하여 테이블의 행을 액세스
+    - 규칙 8. Composite index
+      - 복합 인덱스에 동등(‘=’ 연산자) 조건으로 검색하는 경우
+      - A+B 칼럼으로 복합 인덱스가 생성되어 있고, 조건절에서 WHERE A=10 AND B=1 형태로 검색하는 방식
+    - 규칙 9. Single column index
+      - 단일 칼럼 인덱스에 ‘=’ 조건으로 검색하는 경우
+      - A 칼럼에 단일 칼럼 인덱스가 생성되어 있고, 조건절에서 A=10 형태로 검색하는 방식
+    - 규칙 10. Bounded range search on indexed columns
+      - 인덱스가 생성되어 있는 칼럼에 양쪽 범위를 한정하는 형태로 검색하는 방식
+      - BETWEEN, LIKE 등
+    - 규칙 11. Unbounded range search on indexed columns
+      - 인덱스가 생성되어 있는 칼럼에 한쪽 범위만 한정하는 형태로 검색하는 방식
+      - 연산자 >, >=, <, <= 등
+    - 규칙 15. Full table scan
+      - 전체 테이블을 액세스하면서 조건절에 주어진 조건을 만족하는 행만을 결과로 추출
+  - 조인 칼럼의 인덱스가 양쪽에 모두 있으면 우선 순위가 높은 테이블을 선행 테이블(Driving Table)로 선택
+  - 조인 칼럼의 인덱스가 한쪽에만 있으면 인덱스가 없는 테이블을 선행 테이블로 선택하여 조인 수행
+  - 조인 칼럼에 모두 인덱스가 존재하지 않으면 FROM 절의 뒤에 나열된 테이블을 선행 테이블로 선택
+
+- 비용기반 옵티마이저
+
+  - 단순한 몇 개의 규칙만으로 일량을 예측하는 규칙기반 옵티마이저의 단점 극복
+  - SQL문을 처리하는데 필요한 비용이 가장 적은 실행계획 선택
+    - 비용: SQL문을 처리하기 위해 예상되는 소요시간 또는 자원 사용량
+  - 비용 예측을 위해 테이블, 인덱스, 칼럼 등 다양한 객체 통계정보와 시스템 통계정보 등을 이용
+  - 정확한 통계정보를 유지하는 것은 비용기반 최적화에서 중요한 요소
+  - ![[그림 Ⅱ-3-3] 비용기반 옵티마이저의 구성 요소](https://dataonair.or.kr/publishing/img/knowledge/SQL_241.jpg)
+
+  - 구성
+    - 질의 변환기: 사용자가 작성한 SQL을 처리하기 쉬운 형태로 변환
+    - 대안 계획 생성기
+      - 동일한 결과를 생성하는 다양한 대안계획 생성
+      - 연산의 적용 순서 변경, 연산 방법 변경, 조인 순서 변경 등
+    - 비용 예측기
+      - 대안 계획 생성기에 의해 생성된 대안 계쵝의 비용 예측
+      - 정확한 비용 예측을 위해서 연산의 중간 집합 크기, 결과 집합 크기, 분포도 등의 예측이 정확해야 함
+      - 보다 정확한 예측을 위해 통계정보 필요
+  - 통계정보, DBMS 버전, DBMS 설정 정보 등의 차이로 인해 동일 SQL문도 서로 다른 실행계획 생성될 수 있음
+  - 실행계획의 예측 및 제어가 어려움
+
+
+
+#### 실행계획(Execution Plan)
+
+- SQL에서 요구한 사항을 처리하기 위한 절차와 방법
+- 오라클의 실행계획
+  - 조인 순서: 조인작업을 수행할 때 참조하는 테이블의 순서
+  - 조인 기법: 두 개의 테이블을 조인할 때 사용할 수 있는 방법. NL Join, Hash Join, Sort Merge Join 등
+  - 액세스 기법: 하나의 테이블을 액세스할 때 사용할 수 있는 방법. 인덱스 스캔, 전체 테이블 스캔 등
+  - 최적화 정보: 옵티마이저가 실행계획의 각 단계마다 예상되는 비용 사항을 표시한 것. Cost(상대적인 비용), Card(Cardinality. 조건을 만족한 결과 집합 또는 건수), Bytes(결과 집합이 차치하는 메모리 양)
+  - 연산: 여러가지 조작을 통해 원하는 결과를 얻어내는 일련의 작업. 조인기법, 액세스 기법, 필터, 정렬, 집계, 뷰 등
+
+
+
+#### SQL 처리 흐름도(Access Flow Diagram)
+
+- SQL 내부적인 처리 절차를 시각적으로 표현한 도표. 실행계획의 시각화
+- 조인 순서, 액세스 순서, 조인 기법 등 표현
+
+- ![[그림 Ⅱ-3-5] SQL 처리 흐름도](https://dataonair.or.kr/publishing/img/knowledge/SQL_243.jpg)
+  - 조인 순서는 TAB1 → TAB2
+  - TAB1 = Outer Table 또는 Driving Table, TAB2 = Inner Table 또는 Lookup Table
+  - TAB1은 테이블 전체 스캔, TAB2는 I01_TAB2 이라는 인덱스를 통한 인덱스 스캔
+  - 조인 방법은 NL(NESTED LOOP) Join을 수행
+  - TAB1에 대한 액세스는 스캔(Scan) 방식, 조인시도 및 I01_TAB2 인덱스를 통한 TAB2 액세스는 랜덤(Random) 방식
+- 성능적인 관점을 살펴보기 위해서 SQL 처리 흐름도에 일량을 함께 표시할 수 있음
+
+
+
+###  02. 인덱스 기본
+
+#### 인덱스 특징과 종류
+
+- 특징
+
+  - 인덱스는 테이블을 기반으로 선택적으로 생성할 수 있는 구조. 생성하지 않거나 여러 개를 생성해도 됨
+  - 목적: 검색 성능의 최적화
+  - INSERT, UPDATE, DELETE 같은 DML 작업은 테이블과 인덱스를 같이 변경해야 하므로 느려질 수 있음
+
+- 트리 기반 인덱스
+
+  - ![[그림 Ⅱ-3-6] B-트리 인덱스 구조](https://dataonair.or.kr/publishing/img/knowledge/SQL_244.jpg)
+
+  - 가장 일반적인 인덱스 B-트리 인덱스
+
+  - 브랜치 블록과 리프 블록으로 구성. 브랜치 블록 중 가장 상위 블록이 루트 블록
+
+  - 브랜치 블록: 분기를 목적으로 하는 블록. 다음 단계의 블록을 가리키는 포인터를 가지고 있음
+
+  - 리프 블록: 트리의 가장 아래 단계에 존재. 인덱스를 구성하는 칼럼의 데이터와 해당 데이터를 가지고 있는 행의 위치를 가리키는 레코드 식별자(RID)로 구성
+
+    - 인덱스 데이터는 인덱스를 구성하는 칼럼의 값으로 정렬
+
+    - 인덱스 데이터의 값이 동일하면 레코드 식별자 순서로 저장됨
+    - 양방향 링크를 가지고 있어서 오름차운과 내림차순 검색 쉬움
+
+  - '='로 검색하는 일치검색과 'BETWEEN', '>' 등과 같은 연산자로 검색하는 범위 검색 모두 적합
+
+  - ![[그림 Ⅱ-3-7] B-트리 인덱스 검색](https://dataonair.or.kr/publishing/img/knowledge/SQL_245.jpg)
+
+    1. 브랜치 블록의 가장 왼쪽 값이 찾는 값보다 작거나 같으면 왼쪽으로 이동
+    2. 찾는 값이 브랜치 블록 사이에 존재하면 가운데 포인터로 이동
+    3. 오른쪽 값보다 크면 오른쪽 포인터로 이동
+    4. 찾을 때까지 반복
+
+  - 37~50을 찾는다면 37을 찾고, 50보다 큰 값을 만날 때까지 오른쪽으로 이동
+
+  - 인덱스를 생성할 때 동일 칼럼으로 구성된 인덱스를 중복해서 생성할 수 없음
+
+  - 인덱스 구성 칼럼은 동일하지만 칼럼의 순서가 다르면 서로 다른 인덱스로 생성할 수 있음
+
+  - Oracle에서 트리 기반 인덱스에는 B-트리 인덱스, 비트맵 인덱스(Bitmap Index), 리버스 키 인덱스(Reverse Key Index), 함수기반 인덱스(FBI, Function-Based Index) 등
+
+- SQL Server의 클러스터형 인덱스
+
+  - 저장 구조에 따라 클러스터형 인덱스와 비클러스터형 인덱스로 구분
+  - 클러스터형 인덱스의 특징
+    - 인덱스의 리프 페이지 = 데이터 페이지. 테이블 탐색에 필요한 레코드 식별자가 리프 페이지에 없음(인덱스 키 칼럼과 나머지 칼럼을 리프 페이지에 같이 저장하기 때문에 테이블을 랜덤 액세스할 필요 없음)
+    - 리프 페이지의 모든 로우는 인덱스 키 칼럼 순으로 물리적으로 정렬되어 저장됨. 테이블 로우는 물리적으로 한 가지 순서로만 정렬됨. 클러스터형 인덱스는 테이블당 한 개만 생성 가능
+
+
+
+#### 전체 테이블 스캔과 인덱스 스캔
+
+- 전체 테이블 스캔
+  - 테이블에 존재하는 모든 데이터를 읽어 가면서 조건에 맞으면 결과로 추출하고 맞지 않으면 버리는 방식으로 검색
+  - 오라클의 경우 테이블의 고수위 마크(HWM, High Water Mark)아래의 모든 블록을 읽음
+  - 전체 테이블 스캔 방식으로 읽은 모든 블록들은 재사용성이 떨어지므로 메모리에서 곧 제거될 수 있도록 관리
+  - 전체 테이블 스캔이 옵티마이저가 되는 이유
+    - SQL문에 조건이 존재하지 않는 경우: 테이블에 존재하는 모든 데이터가 결과
+    - SQL문의 주어진 조건에 사용 가능한 인덱스가 존재하지 않는 경우
+    - 옵티마이저의 취사 선택: 조건을 만족하는 데이터가 많은 경우 결과를 추출하기 위해 테이블의 대부분의 블록을 액세스해야 한다고 판단하면 인덱스가 존재해도 전체 테이블 스캔 방식 가능
+    - 그 밖의 경우: 병렬처리 방식 또는 전체 테이블 스캔 방식의 힌트를 사용한 경우
+- 인덱스 스캔
+  - 인덱스를 구성하는 칼럼의 값을 기반으로 데이터를 추출하는 액세스 기법
+  - 인덱스의 리프 블록은 인덱스를 구성하는 칼럼과 레코드 식별자로 구성
+  - 인덱스에 존재하지 않는 칼럼의 값이 필요한 경우 현재 읽은 레코드 식별자를 이용하여 테이블에 액세스해야 함(모든 칼럼이 있을 경우 액세스 미발생)
+  - 인덱스는 인덱스 구성 칼럼의 순서로 정렬되어 있기 때문에 인덱스를 경유하여 데이터를 읽으면 결과 역시 정렬되어 반환됨
+  - 인덱스 유일 스캔(Index Unique Scan): 유일 인덱스를 사용하여 단 하나의 데이터 추출. 중복 불가. 인덱스 구성 칼럼에 모두 '='로 값이 주어질 때
+  - 인데스 범위 스캔(Index Range Scan): 한 건 이상의 데이터 추출. 인덱스 구성 칼럼 모두에 '='이 아닐 때와 비유일 인덱스를 이용하는 모든 액세스 방식
+    - 인덱스 역순 범위 스캔(Index Range Scan Descending)
+    - ![[그림 Ⅱ-3-10] 인덱스 오름/내림 차순 범위 스캔](https://dataonair.or.kr/publishing/img/knowledge/SQL_248.jpg)
+
+
+
+- 전체 테이블 스캔 vs 인덱스 스캔
+  - 규칙기반 옵티마이저에서 인덱스 스캔 방식은 사용 가능한 적절한 인덱스가 존재할 때만 이용할 수 있지만 전체 테이블 스캔은 인덱스 존재 유무와 상관없이 항상 이용 가능함
+  - 인덱스 스캔은 인덱스에 존재하는 레코드 식별자를 이용하여 데이터의 정확한 위치를 알고서 데이터를 읽기 때문에 불필요하게 다른 블록을 더 읽을 필요가 없음
+  - ![[그림 Ⅱ-3-11] 전체 테이블 스캔과 인덱스 스캔에 대한 SQL 처리 흐름도 표현 예시](https://dataonair.or.kr/publishing/img/knowledge/SQL_249.jpg)
+
+
+
+### 03. 조인 수행 원리
+
+- 조인: 두 개 이상의 테이블을 하나의 집합으로 만드는 연산
+
+
+
+#### NL JOIN
+
+- 프로그래밍에서 사용하는 중첩된 반복문과 유사한 방식의 조인
+- 주로 랜덤 액세스 방식
+- 반복문 외부에 있는 테이블을 선행 테이블/외부 테이블이라고 하고, 내부에 있는 테이블을 후행 테이블/내부 테이블이라고 함
+- 수행 방식
+  - 선행 테이블에서 주어진 조건을 만족하는 행을 찾음
+  - 선행 테이블의 조인 키 값을 가지고 후행 테이블에서 조인 수행
+  - 선행 테이블의 조건을 만족하는 모든 행에 대해 1번 작업 반복 수행
+- 선행 테이블의 조건을 만족하는 행 개수가 많으면 후행 테이블의 조인작업이 반복 수행되기 때문에, 결과 행의 수가 적은 테이블을 조인 순서상 선행 테이블로 선택하면 전체 일량을 줄일 수 있음
+  - ![[그림 Ⅱ-3-12] NL Join](https://dataonair.or.kr/publishing/img/knowledge/SQL_250.jpg)
+    1. 선행 테이블에서 조건을 만족하는 첫 번째 행을 찾음 → 이때 선행 테이블에 주어진 조건을 만족하지 않는 경우 해당 데이터는 필터링 됨 
+    2. 선행 테이블의 조인 키를 가지고 후행 테이블에 조인 키가 존재하는지 찾으러 감 → 조인 시도
+    3. 후행 테이블의 인덱스에 선행 테이블의 조인 키가 존재하는지 확인 → 선행 테이블의 조인 값이 후행 테이블에 존재하지 않으면 선행 테이블 데이터는 필터링 됨 (더 이상 조인 작업을 진행할 필요 없음) 
+    4. 인덱스에서 추출한 레코드 식별자를 이용하여 후행 테이블을 액세스 → 인덱스 스캔을 통한 테이블 액세스 후행 테이블에 주어진 조건까지 모두 만족하면 해당 행을 추출버퍼에 넣음 
+    5. ⑤ ~ ⑪ 앞의 작업을 반복 수행함
+- 추출버퍼: SQL문의 실행결과를 보관하는 버퍼
+  - 일정 크기를 설정하여 버퍼에 결과가 모두 차거나 더 이상 결과가 없으면 사용자에게 반환
+  - 추출버퍼 = 운반단위 = Array Size = Prefetch Size
+- 조인이 성공하면 바로 결과를 사용자에게 보여줄 수 있어 온라인 프로그램에 적합
+
+
+
+#### SORT MERGE JOIN
+
+- 조인 칼럼을 기준으로 데이터를 정렬하여 조인 수행
+- 주로 스캔 방식
+- 넓은 범위의 데이터를 처리할 때 이용되던 조인 기법
+- Hash Join과 달리 동등 조인 + 비동등 조인 모두 작업 가능
+- 인덱스를 사용하지 않기 때문에 인덱스가 없어도 사용할 수 있음
+- ![[그림 Ⅱ-3-13] Sort Merge Join](https://dataonair.or.kr/publishing/img/knowledge/SQL_251.jpg)
+  1. 선행 테이블에서 주어진 조건을 만족하는 행을 찾음
+  2. 선행 테이블의 조인 키를 기준으로 정렬 작업을 수행 ① ~ ②번 작업을 선행 테이블의 조건을 만족하는 모든 행에 대해 반복 수행
+  3. 후행 테이블에서 주어진 조건을 만족하는 행을 찾음
+  4. 후행 테이블의 조인 키를 기준으로 정렬 작업을 수행 ③ ~ ④번 작업을 후행 테이블의 조건을 만족하는 모든 행에 대해 반복 수행
+  5. 정렬된 결과를 이용하여 조인을 수행하며 조인에 성공하면 추출버퍼에 넣음
+
+
+
+#### HASH JOIN
+
+- 해슁 기법을 이용하여 조인 수행
+- 조인할 테이블의 조인 칼럼을 기준으로 해쉬 함수 수행하여 동일한 해쉬 값을 갖는 것들 사이에서 실제 값이 같은지를 비교하면서 조인 수행
+- NL JOIN의 랜덤 액세스 문제점과 Sort Merge Join의 정렬 작업 부담을 해결
+- 인덱스를 사용하지 않기 때문에 인덱스 없어도 사용 가능
+- '='로 수행하는 동등 조인에서만 사용 가능
+- 조인 작업을 수행하기 위해 해쉬 테이블을 메모리에 생성해야 함
+- 결과 행 수가 적은 테이블을 선행 테이블로 사용하는 것이 좋음
+- 선행 테이블(Build Input), 후행 테이블(Prove Input)이라고도 함
+- ![[그림 Ⅱ-3-14] Hash Join](https://dataonair.or.kr/publishing/img/knowledge/SQL_252.jpg)
+  1. 선행 테이블에서 주어진 조건을 만족하는 행을 찾음
+  2. 선행 테이블의 조인 키를 기준으로 해쉬 함수를 적용하여 해쉬 테이블을 생성 → 조인 칼럼과 SELECT 절에서 필요로 하는 칼럼도 함께 저장됨 ① ~ ②번 작업을 선행 테이블의 조건을 만족하는 모든 행에 대해 반복 수행
+  3. 후행 테이블에서 주어진 조건을 만족하는 행을 찾음
+  4. 후행 테이블의 조인 키를 기준으로 해쉬 함수를 적용하여 해당 버킷을 찾음 → 조인 키를 이용해서 실제 조인될 데이터를 찾음
+  5. 조인에 성공하면 추출버퍼에 넣음 ③ ~ ⑤번 작업을 후행 테이블의 조건을 만족하는 모든 행에 대해서 반복 수행
