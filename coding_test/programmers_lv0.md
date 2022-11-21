@@ -1018,3 +1018,192 @@ def solution(my_string):
     return answer
 ```
 
+   
+
+### Day15 문자열, 해시, 배열, 수학
+
+#### 영어가 싫어요
+
+```python
+def solution(numbers):
+    num_dict = {'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
+                'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9}
+    for num in num_dict:
+        if num in numbers:
+            numbers = numbers.replace(num, str(num_dict.get(num)))
+    return int(numbers)
+
+  
+# 딕셔너리를 모두 문자열로 저장 후 replace 사용
+def solution(numbers):
+    num_dict = {'zero':'0', 'one':'1', 'two':'2', 'three':'3', 'four':'4', 
+                'five':'5', 'six':'6', 'seven':'7', 'eight':'8', 'nine':'9'}
+    for num in num_dict.keys():
+        numbers = numbers.replace(num, num_dict[num])
+    return int(numbers)
+```
+
+#### 인덱스 바꾸기
+
+```python
+def solution(my_string, num1, num2):
+    my_string = list(my_string)
+    my_string[num1], my_string[num2] = my_string[num2], my_string[num1]
+    return ''.join(my_string)
+```
+
+#### 한 번만 등장한 문자
+
+```python
+## Mine
+def solution(s):
+    answer = ''
+    s_list = sorted(list(s))
+    for char in s_list:
+        if s_list.count(char) == 1:
+            answer += char
+    return answer
+  
+  
+## Others
+def solution(s):
+  return ''.join(sorted(filter(lambda x: s.count(x) == 1, s))) # filter + lambda
+	return ''.join(sorted([k for k in s if s.count(k) == 1])) # 리스트내포
+```
+
+#### 약수 구하기
+
+```python
+## Mine
+def solution(n):
+    answer = []
+    for i in range(1, n//2+1): # n의 절반까지 쌍으로 추가하기
+        if n%i == 0:
+            answer.append(i)
+            answer.append(n/i)
+    return sorted(list(set(answer)))
+  
+  
+## Others
+def solution(n): 
+  	return [k for k in range(1, n+1) if n%k == 0] # n까지 약수 모두 추가
+```
+
+​    
+
+### Day16 문자열, 수학, 배열, 조건문
+
+#### 편지
+
+```python
+def solution(message):
+    return len(message)*2
+```
+
+#### 가장 큰 수 찾기
+
+```python
+def solution(array):
+    return [max(array), array.index(max(array))]
+```
+
+#### 문자열 계산하기
+
+```python
+# 방법1 eval()
+def solution(my_string):
+    return eval(my_string)
+
+# 방법2 문자별로 자료형 변경하기
+def solution(my_string):
+		s = my_string.split()
+		answer = int(s[0])
+		for i in range(1, len(s), 2):
+		    if s[i] == '+':
+		        answer += int(s[i+1])
+		    if s[i] == '-':
+		        answer -= int(s[i+1])
+		return answer
+```
+
+#### 배열의 유사도
+
+```python
+## Mine
+def solution(s1, s2):
+    return len([k for k in s1 if k in s2])
+  
+  
+## Others
+# 교집합 이용하기
+def solution(s1, s2):
+  	return len(set(s1)&set(s2))
+```
+
+​    
+
+### Day17 문자열, 수학, 조건문, 배열, 사칙연산
+
+#### 숫자 찾기
+
+```python
+## Mine
+def solution(num, k):
+    loc = str(num).find(str(k))
+    return loc if loc == -1 else loc+1
+  
+  
+## Others
+def solution(num, k):
+  return (lambda x: x+1 if x>=0 else x)(str(num).find(str(k)))
+```
+
+#### n의 배수 고르기
+
+```python
+def solution(n, numlist):
+    return [k for k in numlist if k%n==0]  #리스트내포
+ 		return list(filter(lambda x: x%n==0, numlist))  #filter+lambda
+```
+
+#### 자릿수 더하기
+
+```python
+def solution(n):
+    return sum(map(int, str(n))) 
+  	return sum([int(k) for k in str(n)])
+```
+
+#### OX퀴즈
+
+```python
+## Mine
+# 방법1
+def solution(quiz):
+    answer = []
+    for q in quiz:
+        if eval(q.split('=')[0]) == eval(q.split('=')[1]):
+            answer.append("O")
+        else:
+            answer.append("X")
+    return answer
+
+# 방법2
+def solution(quiz):
+    answer = []
+    q = [x.replace('=', '==') for x in quiz]  #eval로 인식할 수 있도록 ==으로 변경
+    for x in q:
+        if eval(x) == True:
+            answer.append("O")
+        else:
+            answer.append("X")
+    return answer
+  
+  
+## Others
+# lambda 활용
+def solution(quiz):
+  	quiz = list(map(lambda x: x.split(' = '), quiz))  #[식, 답] 형태로 분리
+    answer = list(map(lambda x: 'O' if eval(x[0])==eval(x[1]) else 'X', quiz))
+```
+
