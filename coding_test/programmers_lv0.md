@@ -1155,7 +1155,7 @@ def solution(num, k):
   
 ## Others
 def solution(num, k):
-  return (lambda x: x+1 if x>=0 else x)(str(num).find(str(k)))
+  	return (lambda x: x+1 if x>=0 else x)(str(num).find(str(k)))  #lambda함수의 매개변수로 str().find() 결과값을 지정
 ```
 
 #### n의 배수 고르기
@@ -1205,5 +1205,279 @@ def solution(quiz):
 def solution(quiz):
   	quiz = list(map(lambda x: x.split(' = '), quiz))  #[식, 답] 형태로 분리
     answer = list(map(lambda x: 'O' if eval(x[0])==eval(x[1]) else 'X', quiz))
+    return answer
+    
+    
+## lambda를 활용하여 방법2를 이렇게 수정하자!
+def solution(quiz):
+  	q = [k.replace('=', '==') for k in quiz]
+    return list(map(lambda x: 'O' if eval(x) else 'X', q))
+```
+
+​    
+
+### Day18 문자열, 수학, 조건문, 정렬
+
+#### 문자열안에 문자열
+
+```python
+def solution(str1, str2):
+    return 2 if str1.find(str2)== -1 else 1
+  	return 1 if str2 in str1 else 2
+```
+
+#### 제곱수 판별하기
+
+```python
+## Mine
+def solution(n):
+    answer = [k for k in range(n) if k*k == n]
+    return 1 if len(answer) == 1 else 2
+  
+  
+## Others
+def solution(n):
+  	return 1 if n**0.5 == int(n**0.5) else 2  # '**'제곱을 활용하여 제곱근 취하기
+  	return 1 if (n**0.5).is_integer() else 2  # is_integer() 함수를 통해 정수 여부 판별
+```
+
+#### 세균 증식
+
+```python
+# 방법1
+def solution(n, t):
+    for i in range(1, t+1):
+        n *= 2
+    return n
+
+# 방법2
+def solution(n, t):
+  	return n*(2**t)
+```
+
+#### 문자열 정렬하기(2)
+
+```python
+def solution(my_string):
+    return ''.join(sorted(my_string.lower()))
+```
+
+​    
+
+### Day19 문자열, 배열, 조건문
+
+#### 7의 개수
+
+```python
+def solution(array):
+    return str(array).count('7')
+```
+
+#### 잘라서 배열로 저장하기
+
+```python
+def solution(my_str, n):
+    answer = []
+    for i in range(0, len(my_str), n):
+        answer.append(my_str[i:i+n])
+    return answer
+```
+
+#### 중복된 숫자 개수
+
+```python
+def solution(array, n):
+    return array.count(n)
+```
+
+#### 머쓱이보다 키 큰 사람
+
+```python
+## Mine
+def solution(array, height):
+    answer = 0
+    for i in array:
+        if height < i:
+            answer += 1
+    return answer
+  
+  
+## Others
+def solution(array, height):
+  	return sum([1 for k in array if k>height])  #키 큰 사람 수만큼 1 더하기
+  	return len(list(filter(lambda x: x > height, array)))  #키 큰 사람 필터링 후 원소 개수
+  
+def solution(array, height):
+  	array.append(height)  #배열에 비교대상을 추가해서 
+    array.sort()  #정렬 후 
+    return array.index(height)  #비교대상의 인덱스 번호 출력하기
+```
+
+​    
+
+### Day20 수학, 시뮬레이션, 문자열, 사칙연산
+
+#### 직사각형 넓이 구하기
+
+```python
+# 방법1
+def solution(dots):
+    return abs(max(dots)[1]-min(dots)[1])*abs(max(dots)[0]-min(dots)[0])
+  
+# 방법2
+def solution(dots):
+		dots.sort()
+    return abs((dots[0][1]-dots[1][1])*(dots[0][0]-dots[3][0]))
+```
+
+#### 캐릭터의 좌표
+
+```python
+## Mine
+def solution(keyinput, board):
+    answer = [0, 0]
+    for direction in keyinput:
+        if direction == 'left' and -(board[0]//2) <  answer[0]:
+            answer[0] -= 1
+        elif direction == 'right' and board[0]//2 > answer[0]:
+            answer[0] += 1
+        elif direction == 'up' and board[1]//2 > answer[1]:
+            answer[1] += 1
+        elif direction == 'down' and -(board[1]//2) < answer[1]:
+            answer[1] -= 1
+    return answer
+```
+
+#### 최댓값 만들기(2)
+
+```python
+def solution(numbers):
+    numbers = sorted(numbers)
+    return max(numbers[0]*numbers[1], numbers[-1]*numbers[-2])
+```
+
+#### 다항식 더하기
+
+```python
+## Mine
+def solution(polynomial):
+    x_list = []
+    for k in polynomial.split():
+        if k == 'x':
+            x_list.append(k.replace('x', '1'))
+        elif 'x' in k:
+            x_list.append(k.replace('x', ''))
+            
+    x_list = list(map(int, x_list))
+    num_list = [int(k) for k in polynomial.split() if k.isdigit()]
+    answer = [sum(x_list), sum(num_list)]
+    
+    if answer[0] == 1:  #x계수가 1일 때
+        if answer[1] == 0:
+            return 'x'
+        else:
+            return f'x + {answer[1]}'
+    elif answer[0] == 0:  #상수항 있을 때
+        return f'{answer[1]}'
+    elif answer[1] == 0:  #X항만 있을 때
+        return f'{answer[0]}x'
+    else:
+        return f'{answer[0]}x + {answer[1]}'
+      
+      
+## Others
+def solution(polynomial):
+    x_num, num = 0, 0
+    for pol in polynomial.split(' + '):
+        if 'x' in pol:  #x항 계산
+            if pol == 'x': pol = 1
+            else: pol = int(pol.replace('x', ''))
+            x_num += int(pol)
+                      
+        else:  #상수항 계산
+            num += int(pol)
+            
+    answer = []
+    if x_num != 0:
+        answer.append('x' if x_num == 1 else f'{x_num}x')
+    if num != 0:
+        answer.append(f'{num}')
+
+    return ' + '.join(answer)  #x항과 상수항 둘 다 0이 아닐 때 + 로 연결
+
+```
+
+​     
+
+### Day 21 문자열, 사칙연산, 시뮬레이션, 2차원배열, 수학, 배열
+
+#### 숨어있는 숫자의 덧셈(2)
+
+- [re 정규식 연산](https://docs.python.org/ko/3/library/re.html)
+
+```python
+## Mine
+import re
+
+def solution(my_string):
+    my_string = re.sub('[^0-9]', " ", my_string)
+    answer = 0
+    for num in my_string.split():
+        if num.isdigit():
+            answer += eval(num)
+    return answer
+  
+
+## Others
+def solution(my_string):
+    num_list = re.findall(r'\d+', my_string)  #\d : str에서 숫자를 의미
+    return sum(map(int, num_list))
+```
+
+#### 안전지대
+
+```python
+def solution(board):
+    for row in range(len(board)):
+        for col in range(len(board)):
+            if board[row][col] == 1:
+              	#list out of range 방지(0보다 작을 땐 0, 리스트 길이보다 클 땐 리스트 길이 선택)
+                for i in range(max(row-1,0), min(row+2, len(board))):  
+                    for j in range(max(col-1, 0), min(col+2, len(board))):
+                        if board[i][j] == 1
+                        		: continue
+                        board[i][j] = 2  #1이 아닌 임의의 숫자로 위험지대 표시
+                        
+    return sum(board[k].count(0) for k in range(len(board)))
+```
+
+#### 삼각형의 완성조건(2)
+
+```python
+## Mine
+def solution(sides):
+    sides = sorted(sides)
+    line_list = [k for k in range(sides[1]-sides[0]+1, sum(sides))]
+    return len(line_list)
+  
+  
+## Others
+# 가장 긴 변이 나머지 합보다 작아야 함
+def solution(sides):
+  	return sum(sides) - max(sides) + min(sides) - 1
+  	return min(sides)*2-1
+
+```
+
+#### 외계어 사전
+
+```python
+## Mine
+def solution(spell, dic):
+    answer = 2
+    for i in dic:
+        if set(spell) == set(i):
+            answer -= 1
+    return answer
 ```
 
