@@ -1481,3 +1481,291 @@ def solution(spell, dic):
     return answer
 ```
 
+​    
+
+###  Day 22 dp, 수학, 조건문, 배열
+
+#### 저주의 숫자 3
+
+```python
+## Mine
+def solution(n):
+    num = [k for k in range(1, 3*n) if k%3 != 0 and '3' not in str(k)]
+    return num[n-1]
+  
+  
+## Others
+def solution(n):
+  	answer = 0
+    for _ in range(n):
+      	answer += 1
+        while answer%3==0 or '3' in str(answer):
+          	answer += 1
+    return answer
+```
+
+- 언더스코어(_) 활용
+  - 인터프리터에서 마지막 값을 저장할 때
+  - 값을 무시하고 싶을 때
+  - 변수나 함수명에 특별한 의미 또는 기능을 부여하고자 할 때
+  - 숫자 리터럴값의 자릿수 구분을 위한 구분자로써 사용할 때
+
+```python
+## 인터프리터에서 마지막 값 저장
+>>> 10
+10
+>>> _
+10
+>>> _*3
+30
+
+## 값을 무시하고 싶을 때
+# 하나의 값 무시
+x, _, y = (1, 2, 3)
+-> x=1, y=3
+
+# 여러 개의 값 무시
+x, *_, y = (1, 2, 3, 4, 5)
+-> x=1, y=5
+
+# 인덱스 무시
+for _ in range(10):
+  	function()
+
+# 특정 위치 값 무시
+for _, val in list_of_tuple:
+  	function()
+    
+
+## 특별한 의미의 네이밍
+# single_trailing_underscore_: 파이썬 키워드와의 충돌을 피하기 위해 사용하는 컨벤션
+list_ = List.objects.get(1) # list내장 함수와의 충돌 회피
+
+## 숫자 리터럴값의 자릿수 구분자
+dec_base = 1_000_000
+bin_base = 0b_1111_0000
+hex_base = 0x_1234_abcd
+
+print(dec_base) # 1000000
+print(bin_base) # 240
+print(hex_base) # 305441741
+```
+
+
+
+#### 평행
+
+- [itertools combinations(p, r)](https://docs.python.org/ko/3/library/itertools.html)
+  - `combinations('ABCD', 2)` -> `AB AC AD BC BD CD`
+  - 실행 결과: r길이의 튜플들, 정렬된 순서, 반복 요소 없음
+- itertools의 다른 조합형 이터레이터
+  - `product(p, g, ...[repeat=1])` 
+    - `product('ABCD', repeat=2)` -> `AA AB AC AD BA BB BC BD CA CB CC CD DA DB DC DD`
+    - 실행 결과: 데카르트 곱, 중첩된 for 루프와 동일
+  - `permutations(p [,r])`
+    - `permutations('ABCD', 2)` -> `AB AC AD BA BC BD CA CB CD DA DB DC`
+    - 실행 결과: r길이의 튜플들, 모든 가능한 순서, 반복 요소 없음
+  - `combinations_with_replacemnet(p. r)`
+    - `combinations_with_replacement('ABCD', 2)` -> `AA AB AC AD BB BC BD CC CD DD`
+    - 실행 결과: r길이의 튜플들, 정렬된 순서, 반복 요소 있음
+
+```python
+## Mine
+def solution(dots):
+    if (dots[1][0]-dots[0][0])/(dots[1][1]-dots[0][1]) == (dots[3][0]-dots[2][0])/(dots[3][1]-dots[2][1]):
+        return 1
+    elif (dots[2][0]-dots[0][0])/(dots[2][1]-dots[0][1]) == (dots[3][0]-dots[1][0])/(dots[3][1]-dots[1][1]):
+        return 1
+    elif (dots[3][0]-dots[0][0])/(dots[3][1]-dots[0][1]) == (dots[2][0]-dots[1][0])/(dots[2][1]-dots[1][1]):
+        return 1
+    else:
+        return 0
+      
+      
+## Others
+# itertools의 combinations()함수 활용
+from itertools import combinations
+def solution(dots):
+  	answer = []
+    for (x1, y1), (x2, y2) in combinations(dots, 2): #각 선분 조합
+      	answer.append((y2-y1), (x2-X1))
+    for (x1, y1), (x2, y2) in combinations(answer, 2):
+      	if x1*y2 == x2*y1:
+          	return 1
+    return 0
+```
+
+#### 겹치는 선분의 길이
+
+```python
+## Mine
+# 방법1: 구간을 리스트에 추가, 겹치면 제거하고 제거한 개수 세기
+def solution(lines):
+    range_list = []
+    answer = 0
+    for line in lines:
+        for i in range(line[0], line[1]):
+            if i not in range_list:
+                range_list.append(i)
+            else:
+                range_list.remove(i)
+                answer += 1
+    return answer
+
+# 방법2: 교집합 활용
+def solution(lines):
+		# 각 선분의 범위의 숫자를 가진 집합을 원소로 생성
+    line = [set(range(min(k), max(k))) for k in lines]
+	
+		# 3개 중 2개의 선분을 선택하여 교집합 구하기
+    intersection = len(line[0]&line[1] | line[1]&line[2] | line[0]&line[2])
+    
+		return intersection
+```
+
+#### 유한소수 판별하기
+
+```python
+## Mine
+def solution(a, b):
+		# 기약분수화
+    for i in range(2, a+1):
+        if a%i == 0 and b%i ==0:
+            a = a//i
+            b = b//i
+		
+		# 분모 소인수분해
+    div = []
+    for i in range(2, b+1):
+        while b%i==0:
+            b=b/i
+            if i not in div:
+                div.append(i)
+
+    # 2,5 아닌 소인수 확인
+    answer = 1
+    for i in div:
+        if i not in [2,5]:
+            answer += 1
+            break
+
+    return answer
+  
+  
+## Others
+# math - gcd() 활용
+from math import gcd
+def solution(a, b):
+  	b = b/gcd(a, b)  #기약분수화
+    while b%2==0:  #2와 5로만 약분한 결괏값 구하기
+      	b = b/2
+    while b%5==0: 
+      	b = b/5
+    return 2 if b>1 else 1  #결괏값이 1이상(=약분이 안됨)이면 무한소수
+```
+
+​    
+
+### Day23 배열, 정렬, 문자열
+
+#### 특이한 정렬
+
+```python
+## Mine
+# 방법1: 기준 숫자에서 각 원소값 뺀 결과 활용
+def solution(numlist, n):
+    numlist = sorted(numlist, reverse=True)
+    sub_list = [abs(n-k) for k in numlist]
+    temp = []
+    for i, d in enumerate(sub_list):
+        temp.append([d,i])
+    temp.sort()
+    answer = []
+    for i in temp:
+        answer.append(numlist[i[1]])
+    return answer
+
+# 방법2: sort(key=) 조건 활용
+def solution(numlist, n):
+    numlist = sorted(numlist, reverse=True)
+    numlist = sorted(numlist, key=lambda x: abs(x-n))
+    return numlist
+```
+
+#### 등수 매기기
+
+```python
+## Mine
+# pandas rank 함수 이용
+import pandas as pd
+def solution(score):
+    avg = [sum(k)/2 for k in score]
+    df = pd.DataFrame({'avg': avg}, index=list(range(0, len(score))))
+    answer = list(map(int, df['avg'].rank(method='min', ascending=False).tolist()))
+    return answer
+  
+  
+## Others
+def solution(score):
+  	score = list(map(lambda x: sum(x)/2, score))  #각 평균점수
+  	sorted_score = sorted(score, reverse=True)  #내림차순 정렬
+    return [sorted_score.index(i)+1 for i in score]  #인덱스+1(=순위) 리턴
+  
+# index()는 중복된 값을 동일 번호로 처리하고 다음 인덱스는 중복된 개수만큼 제외하고 진행됨. 일반적인 SQL RANK() 함수와 비슷한 역할!
+```
+
+#### 옹알이(1)
+
+```python
+## Mine
+def solution(babbling):
+    can = ["aya", "ye", "woo", "ma"]
+    answer = 0
+    for word in babbling:
+        for c in can:
+            word = word.replace(c,'0', 1)
+        if word.isdigit():
+            answer += 1
+    return answer
+  
+  
+## Others
+def solution(babbling):
+    answer = 0
+    for b in babbling:
+        for w in [ "aya", "ye", "woo", "ma" ]:
+            if w*2 not in b:
+                b = b.replace(w, ' ')
+        if len(b.strip()) == 0:
+            answer += 1
+    return answer
+```
+
+#### 로그인 성공?
+
+```python
+## Mine
+def solution(id_pw, db):
+    answer = 'fail'
+    for users in db:
+        if id_pw[0] in users:
+            if id_pw == users:
+                answer = 'login'
+            else:
+                answer = 'wrong pw'
+    return answer
+
+# else: answer = 'fail'로 조건 같이 쓰면 테스트 케이스 1번 오류!
+
+## Others
+def solution(id_pw, db):
+  	for user in db:
+      	if user[0]==id_pw[0] & user[1]==id_pw[1]:
+          	return 'login'
+        elif user[0]==id_pw[0] & user[1]!=id_pw[1]:
+          	return 'wrong pw'
+    return 'fail'
+```
+
+
+
