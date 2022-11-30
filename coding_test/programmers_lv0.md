@@ -1767,5 +1767,123 @@ def solution(id_pw, db):
     return 'fail'
 ```
 
+​    
 
+### Day24 수학, 시뮬레이션, 문자열, 조건문, 반복문
+
+#### 치킨 쿠폰
+
+```python
+def solution(chicken):
+    answer = 0
+    while chicken >= 10:
+        answer += chicken//10
+        chicken = chicken//10 + chicken%10
+    return answer
+```
+
+#### 이진수 더하기
+
+```python
+def solution(bin1, bin2):
+    return bin(int(bin1, 2)+int(bin2, 2))[2:]
+  
+# bin(x): 정수를 '0b'+이진수로 변환
+bin(3)
+>>> '0b11'
+
+# int(x, base=10)): x(문자열)를 해당 진수 계산
+int('110', 2) #2진수로 작성된 '110'을 10진수로 변환한 값
+>>> 6
+
+```
+
+#### A로 B 만들기
+
+```python
+def solution(before, after):
+    return 1 if sorted(list(before)) == sorted(list(after)) else 0
+```
+
+#### k의 개수
+
+```python
+## Mine
+def solution(i, j, k):
+    answer = 0
+    for num in range(i, j+1):
+        answer += str(num).count(str(k))
+    return answer
+  
+  
+## Others 
+# 한줄로!
+def solution(i, j, k):
+  	return sum(str(num).count(str(k)) for num in range(i, j+1))
+```
+
+​     
+
+### Day25 시뮬레이션, 조건문, 수학
+
+#### 문자열 밀기
+
+```python
+## Mine
+def solution(A, B):
+    answer = -1
+    for i in range(len(A)):
+        A = A[-1] + A[:-1]
+        if A == B:
+            answer = (i+1)%len(A)
+            break
+    return answer
+  
+  
+## Others
+def solution(A, B):
+    for i in range(len(A)):
+        if A == B:
+            return i
+        else:
+            A = A[-1] + A[:-1]
+    return -1  #만들 수 없을 때
+  
+def solutin(A, B):
+  	idx = (A*2).find(B)  #문자열을 두 번 반복한 것이 모든 경우의 수를 포함
+    return len(A)-idx if idx>0 else idx
+```
+
+#### 종이 자르기
+
+```python
+def solution(M, N):
+    return M*N-1
+```
+
+#### 연속된 수의 합
+
+```python
+def solution(num, total):
+    mid = total//num
+    start = mid-num//2
+    end = start+num
+    if num%2 == 0:
+        start += 1
+        end += 1
+    answer = list(range(start, end))
+    return answer
+```
+
+#### 다음에 올 숫자
+
+```python
+def solution(common):
+    if common[1] - common[0] == common[2] - common[1]:  #등차수열일 때
+        diff = common[1]-common[0]
+        return common.pop() + diff
+    if common[1]/common[0] == common[2]/common[1]:  #등비수열일 때
+        diff = common[1]/common[0]
+        return common.pop()*diff
+```
 
