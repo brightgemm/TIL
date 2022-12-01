@@ -427,5 +427,80 @@ def solution(arr1, arr2):
 		return answer
 ```
 
+​    
 
+### Day8
+
+#### 직사각형 별찍기
+
+```python
+# 방법1
+n, m = map(int, input().split(' '))
+for i in range(m):
+    print(n*'*')
+
+# 방법2
+n, m = map(int, input().split(' '))
+print((n*'*'+'\n')*m)
+```
+
+#### 최대공약수와 최소공배수
+
+```python
+# 방법1
+from math import gcd
+def solution(n, m):
+    return [gcd(n, m), n*m/gcd(n,m)]
+  
+# 유클리드호제법으로 gcd함수 정의하기
+def gcd(a, b):
+  	a, b = b, a%b
+    return a
+
+# lcm 정의하기
+def lcm(a, b):
+  	return a*b/gcd(a, b)
+```
+
+#### 같은 숫자는 싫어
+
+```python
+## Mine
+def solution(arr):
+    answer = [arr[0]]
+		top = arr[0]
+		for n in arr:
+		    if top != n:
+		        answer.append(n)
+		        top = n
+		return answer
+  
+  
+## Others
+# top 대신 list[-1]로 최상단 값 확인
+def solution(arr):
+    answer = [arr[0]]
+    for n in arr:
+        if answer[-1] != n:
+            answer.append(n)        
+    return answer
+```
+
+#### 이상한 문자 만들기
+
+```python
+def solution(s):
+    sentence = []
+    for word in s.split(" "):
+        answer = ''
+        for i in range(len(word)):
+            if i%2 == 0:
+                answer += word[i].upper()
+            else:
+                answer += word[i].lower()
+        sentence.append(answer)
+    return ' '.join(sentence)
+  
+# 문자열 앞뒤 공백, 연속 공백, 대소문자 섞여있는 경우를 모두 만족하자!
+```
 
