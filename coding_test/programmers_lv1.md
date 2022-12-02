@@ -504,3 +504,92 @@ def solution(s):
 # 문자열 앞뒤 공백, 연속 공백, 대소문자 섞여있는 경우를 모두 만족하자!
 ```
 
+​     
+
+### Day9
+
+#### 3진법 뒤집기
+
+```python
+# 방법1: n진법 변환 함수 정의하기
+def Notation(n, divisor): #n진법 변환하기
+    tmp = ''
+    while n:
+        tmp += str(n%divisor)
+				n = n//3
+    return notation[::-1]  #거꾸로 해야 원래 n진법 표기!
+
+def solution(n):
+    return int(Notation(n, 3)[::-1], 3)
+  
+# 방법2: 3진법에만 해당하는 풀이
+def solution(n):
+    tmp = ''
+    while n > 0:
+        tmp += str(n%3)
+        n = n//3
+    return int(tmp, 3)
+```
+
+#### 예산
+
+```python
+## Mine
+def solution(d, budget):
+    answer = 0
+    for i in range(len(d)):
+        if sum(sorted(d)[:i+1]) <= budget:
+            answer += 1
+    return answer
+  
+  
+## Others
+def solution(d, budget):
+    answer = 0
+    for dept in sorted(d):
+        budget -= dept
+        if budget < 0:
+            break
+        answer += 1
+    return answer
+```
+
+#### 시저 암호
+
+```python
+## Mine
+def solution(s, n):
+    abc = 'abcdefghijklmnopqrstuvwxyz'
+    answer = ''
+    for char in list(s):
+        if char == ' ':
+            answer += ' '
+        elif char.islower():
+            answer += abc[(abc.find(char)+n)%len(abc)]
+        elif char.isupper():
+            answer += abc[(abc.find(char.lower())+n)%len(abc)].upper()
+            
+    return answer
+  
+  
+## Others
+# 아스키코드 활용 - chr(number): 숫자를 문자로, ord('str'): 문자를 숫자로 변환
+def solution(s, n):
+    s = list(s)
+    for i in range(len(s)):
+        if s[i].isupper():
+            s[i]=chr((ord(s[i])-ord('A')+ n)%26+ord('A'))
+        elif s[i].islower():
+            s[i]=chr((ord(s[i])-ord('a')+ n)%26+ord('a'))
+
+    return "".join(s)
+```
+
+#### 최소직사각형
+
+```python
+def solution(sizes):
+    sizes = [[w, h] if w > h else [h, w] for w, h in sizes]
+    return max(w for w, h in sizes)*max(h for w, h in sizes)
+```
+
