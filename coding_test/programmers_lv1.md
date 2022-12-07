@@ -462,7 +462,7 @@ def lcm(a, b):
   	return a*b/gcd(a, b)
 ```
 
-#### 같은 숫자는 싫어
+#### 같은 숫자는 싫어(스택/큐)
 
 ```python
 ## Mine
@@ -585,11 +585,149 @@ def solution(s, n):
     return "".join(s)
 ```
 
-#### 최소직사각형
+#### 최소직사각형(완전탐색)
 
 ```python
 def solution(sizes):
     sizes = [[w, h] if w > h else [h, w] for w, h in sizes]
     return max(w for w, h in sizes)*max(h for w, h in sizes)
 ```
+
+​    
+
+### Day 10
+
+#### 1차[비밀지도]
+
+```python
+## Mine
+def solution(n, arr1, arr2):
+    arr1 = [bin(x)[2:].zfill(n) for x in arr1]
+    arr2 = [bin(y)[2:].zfill(n) for y in arr2]
+    answer = []
+    for i in range(n):
+        row = ''
+        for j in range(n):
+            if arr1[i][j] == '0' and arr2[i][j] == '0':
+                row += ' '
+            else:
+                row += '#'
+        answer.append(row)
+    return answer
+
+
+## Others
+# ''.join()사용해서 리스트 안에 작성할 수도 있음
+def solution(n, arr1, arr2):
+    arr1 = [bin(x)[2:].zfill(n) for x in arr1]
+    arr2 = [bin(x)[2:].zfill(n) for x in arr2]
+    return [''.join(' ' if arr1[i][j]=='0' and arr2[i][j] =='0' else '#' for j in range(n)) for i in range(n)]
+  
+  
+# str.zfill(len): 문자열에 인수로 넣은 값의 자리수만큼 0 채우기
+'1234'.zfill(8)   #'00001234'
+'-1234'.zfill(8)   #'-0001234'
+
+# str.rjust(len, [fill_char]): 문자열에 길이만큼 지정 문자 채우기(디폴트 = ' ')
+'1234'.rjust(8)   #'    1234'
+'1234'.rjust(8, '0')   #'00001234'
+'1234'.rjust(8, 'a')   #'aaaa1234'
+```
+
+#### 문자열 내 마음대로 정하기
+
+```python
+def solution(strings, n):
+    return sorted(strings, key=lambda x: (x[n], x))
+```
+
+   
+
+### Day11
+
+#### k번째수(정렬)
+
+```python
+## Mine
+def solution(array, commands):
+    answer = []
+    for x in commands:
+        temp = sorted(array[x[0]-1:x[1]])
+        answer.append(temp[x[2]-1])
+    return answer
+  
+# 다듬기!
+def solution(array, commands):
+    return [sorted(array[x[0]-1:x[1]])[x[2]-1] for x in commands]
+```
+
+#### 숫자 문자열과 영단어
+
+```python
+## Mine
+def solution(s):
+    num_dict = {'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9}
+    for num in num_dict:
+        if num in s:
+            s = s.replace(num, str(num_dict[num]))
+    return int(s)
+
+  
+## Others
+# dict.keys() 활용
+def solution(s):
+    num_dict = {'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9}
+    for key in num_dict.keys():
+        s = s.replace(key, num_dict.get(key))
+    return int(s)
+  
+# list.index() 활용
+def solution(s):
+    num_list = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine']
+    for num in num_list:
+        if num in s:
+            s = s.replace(num, str(num_list.index(num)))
+    return int(s)
+```
+
+​    
+
+### Day12
+
+#### 삼총사
+
+```python
+from itertools import combinations
+def solution(number):
+    answer = 0
+    for i in combinations(numbers, 3):
+        if sum(i) == 0:
+            answer += 1
+    return answer
+
+# 다듬기!
+def solution(number):
+    return sum(1 for k in combinations(number, 3) if sum(k)==0) 
+```
+
+#### 두 개 뽑아서 더하기
+
+```python
+## Mine
+from itertools import combinations
+def solution(numbers):
+    return sorted(list(set(sum(k) for k in combinations(numbers, 2)))
+                  
+                  
+## Others
+# combinations()없이
+def solution(numbers):
+    answer = []
+    for i in range(len(numbers)-1):
+        for j in range(i+1, len(numbers)):
+            answer.append(numbers[i]+numbers[j])            
+    return sorted(list(set(answer)))
+```
+
+
 
