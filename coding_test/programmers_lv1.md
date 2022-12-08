@@ -729,5 +729,48 @@ def solution(numbers):
     return sorted(list(set(answer)))
 ```
 
+​    
+
+### Day13
+
+#### 2016년
+
+```python
+# 방법1
+def solution(a, b):
+    months = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    days = ['FRI', 'SAT', 'SUN', 'MON', 'TUE', 'WED', 'THU']  #1/1금요일부터
+    return days[(sum(months[:a-1]) + b)%7-1]
+
+# 방법2: datetime 모듈
+from datetime import datetime
+def solution(a, b):
+    week = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']
+    return week[datetime(2016, a, b).weekday()]
+
+# datetime.weekday(): 월0 ~ 일6
+# datetime.isoweekday(): 월1 ~ 일7
+```
+
+#### 포켓몬(해시)
+
+```python
+## Mine
+def solution(nums):
+    if len(set(nums)) <= len(nums)//2:
+        return len(set(nums))
+    else:
+        return len(nums)//2
+
+# 다듬기!
+def solution(nums):
+    return len(set(nums)) if len(set(nums)) <= len(nums)//2 else len(nums)//2
+  
+  
+## Others
+def solution(nums):
+  	return min(len(set(nums)), len(nums)//2)  #위 조건문 단순화 버전
+```
+
 
 
