@@ -774,3 +774,70 @@ def solution(nums):
 
 
 
+### Day14
+
+#### 소수찾기
+
+```python
+## Mine
+# 에라토스테네스의 체
+def solution(n):
+    answer = [1 for k in range(n+1)]
+    for i in range(2, int(n**0.5)+1):  #제곱근까지 검사
+        if answer[i] == 1:  #소수일 때
+            j = 2
+            while i*j <= n:
+                answer[i*j] = 0  #가장 작은 i를 제외한 배수(=i로 나누어 떨어짐) 지우기
+                j += 1
+    return sum(answer[2:])  #0, 1을 제외한 2부터의 소수 개수
+  
+  
+## Others
+# 에라토스테네스의 체(set 사용하여 간단 구현)
+def solution(n):
+    prime = set(range(2, n+1))  #가장 작은 소수인 2부터 n까지 담은 집합
+    for i in range(2, int(n**0.5)+1):  #제곱근까지 검사
+        if i in prime:
+        	prime -= set(range(i*2, n+1, i))  #i의 배수 제거하기
+    return len(prime)
+  
+  
+'''
+# 효율성 문제에 대한 고민
+- 소수를 찾기 위해 n이하의 모든 수를 다 나눠서 진행하는 건 효율성이 나쁨
+- 2를 제외한 모든 짝수는 합성수
+- n이하의 소수는 제곱근 n 이하의 숫자 중 소수로 나누어떨어지지 않는 수
+  예를 들어 n=100 일 때, 10이하의 숫자 중 가장 작은 소수만 남기고 배수를 거르는 형태
+'''
+```
+
+#### 모의고사
+
+```python
+## Mine
+def solution(answers):
+    students = ['12345', '21232425', '3311224455']
+    answer = []
+    for i in students:
+        score = 0
+        for j in range(len(answers)):
+            if str(answers[j]) == i[j%len(i)]:
+                score += 1
+        answer.append(score)
+        
+    return [k+1 for k in range(len(answer)) if answer[k]==max(answer)]
+  
+  
+# 수정: enumerate 사용하여 인덱스 번호로 활용하기
+def solution(answers):
+    students = ['12345', '21232425', '3311224455']
+    scores = [0] * len(students)
+    for i, student in enumerate(students):
+        for j, answer in enumerate(answers):
+            if student[j%len(student)] == str(answer): scores[i] += 1
+
+    return [i+1 for i in range(len(scores)) if scores[i]==max(scores)]
+```
+
+
+
