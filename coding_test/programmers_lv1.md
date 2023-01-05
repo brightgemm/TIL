@@ -8,6 +8,7 @@
 
 ### Day1
 
+
 #### 짝수와 홀수
 
 ```python
@@ -811,7 +812,7 @@ def solution(n):
 '''
 ```
 
-#### 모의고사
+#### 모의고사(완전탐색)
 
 ```python
 ## Mine
@@ -839,5 +840,684 @@ def solution(answers):
     return [i+1 for i in range(len(scores)) if scores[i]==max(scores)]
 ```
 
+​    
+
+### Day15
+
+#### 소수 만들기
+
+```python
+## Mine
+from itertools import combinations
+def solution(nums):
+    nums = [sum(k) for k in combinations(nums, 3)]
+    answer = 0
+    for i in nums:
+        answer += 1
+        for j in range(2, int(i**0.5)+1):
+            if i%j==0:
+                answer -= 1
+                break
+    return answer
 
 
+## Others
+# 방법1: 이중 for문
+from itertools import combinations
+def solution(nums):
+    answer = 0
+    for i in combinations(nums, 3):
+        answer += 1
+        num = i[0] + i[1] + i[2]  #num = sum(i)로 변경
+        for div in range(2, int(num**0.5)+1):
+            if num % div == 0:
+                answer -= 1
+                break
+    return answer
+
+  
+# 방법2: 소수 판별 함수 작성(제곱근까지 조사하여 복잡도 줄이기)
+from itertools import combinations
+def isPrime(num):
+    for i in range(2, int(num**0.5)+1):
+        if num % i == 0:
+            return 0
+    return 1
+
+def solution(nums):
+    return sum(1 for k in combinations(nums, 3) if isPrime(sum(k)))  #세 개의 합이 소수이면 +1
+```
+
+#### 실패율
+
+```py
+## Mine
+# 방법1
+def solution(N, stages):
+    answer = {}
+    for stage in range(1, N+1):
+        fail, total = 0, 0
+        for user in stages:
+            if user == stage:  #스테이지에 도전한 사람 중 실패한 사람은 스테이지 번호와 동일함. 작으면 아직 미도전, 크면 클리어 함
+                fail += 1
+            if user >= stage:  #스테이지에 도전 중인 사용자
+                total += 1
+        answer[stage] = fail/total if total > 0 else 0
+    
+    return sorted(answer, key=lambda x: answer[x], reverse=True)
+  	# list comprehension 표현법
+    return [k for k, v in sorted(failrate.items(), key=lambda x:-x[1])]
+
+ 
+# 방법2
+def solution(N, stages):
+    answer = {}
+    total = len(stages)
+    for stage in range(1, N+1):
+        if total == 0:
+            answer[stage] = 0
+        else:
+            cnt = stages.count(stage)  #클리어못한 사용자
+            answer[stage] = cnt/total
+            total -= cnt  #이전스테이지를 클리어 못한 사용자 제거
+    return sorted(answer, key=lambda x: answer[x], reverse=True)
+```
+
+​    
+
+### Day16
+
+#### 콜라 문제
+
+```python
+## Mine
+def solution(a, b, n):
+    result = 0
+    while n >= a:
+        result += (n//a)*b
+        n = n%a + (n//a)*b
+    return result
+```
+
+
+
+#### [1차] 다트 게임
+
+- [입출력 예제]
+
+  | 예제 | dartResult | answer | 설명                        |
+  | ---- | ---------- | ------ | --------------------------- |
+  | 1    | `1S2D*3T`  | 37     | 11 * 2 + 22 * 2 + 33        |
+  | 2    | `1D2S#10S` | 9      | 12 + 21 * (-1) + 101        |
+  | 3    | `1D2S0T`   | 3      | 12 + 21 + 03                |
+  | 4    | `1S*2T*3S` | 23     | 11 * 2 * 2 + 23 * 2 + 31    |
+  | 5    | `1D#2S*3S` | 5      | 12 * (-1) * 2 + 21 * 2 + 31 |
+  | 6    | `1T2D3D#`  | -4     | 13 + 22 + 32 * (-1)         |
+  | 7    | `1D2S3T*`  | 59     | 12 + 21 * 2 + 33 * 2        |
+
+```python
+## Mine
+import re
+def solution(dartResult):
+		# 점수 계산
+    scores = list(zip(re.findall(r'\d+', dartResult), re.findall("['S', 'D', 'T']", dartResult)))
+    rule = {'S': 1, 'D': 2, 'T': 3}
+    scores = [int(x)**rule.get(y) for x, y in scores]
+    
+    # *, #은 [2], [4,5], [6,7,8]번 자리에 올 수 있음
+    for i, c in enumerate(dartResult):
+        if c == '*':
+            if i <= 2:
+                scores[0] *= 2
+            elif 3 < i < 6:
+                scores[0], scores[1] = scores[0]*2, scores[1]*2
+            elif i >= 6:
+                scores[1], scores[2] = scores[1]*2, scores[2]*2
+
+        if c == '#':
+            if i <= 2:
+                scores[0] *= -1
+            elif 3 < i < 6:
+                scores[1] *= -1
+            elif i >= 6:
+                scores[2] *= -1
+
+    return sum(scores)
+  
+  
+## Others
+def solution(dartResult):
+    answer, idx, b_score = 0, 0, 0
+    while idx < len(dartResult):
+        score = 10 if dartResult[idx+1].isdecimal() else int(dartResult[idx])  #점수가 10인 경우와 아닌 경우
+        idx += 2 if dartResult[idx+1].isdecimal() else 1  #10인 경우와 아닌 경우 보너스 문자열 찾기
+        bonus = (lambda x : 3 if x=='T' else 2 if x=='D' else 1)(dartResult[idx])
+        idx += 1
+        
+        if idx == len(dartResult) or dartResult[idx].isdecimal():  #옵션 없는 경우
+            answer += score**bonus
+            b_score = score**bonus
+        elif dartResult[idx] == '#':
+            answer += -score**bonus
+            b_score = -score**bonus
+            idx += 1
+        else:  #'*'인 경우
+            answer += b_score + 2*score**bonus
+            b_score = 2*score**bonus
+            idx += 1
+        
+    return answer
+
+# 점수가 10인 경우 replace로 처리
+def solution(dartResult):
+    scores, answer = [], []
+    dartResult = dartResult.replace('10','k')  #점수가 10인 경우 예외처리
+    scores = ['10' if i == 'k' else i for i in dartResult]
+    
+    i = -1
+    sdt = {'S': 1, 'D': 2, 'T': 3}
+    for s in scores:
+        if s.isdecimal():
+            answer.append(int(s))
+            i += 1
+        elif s in sdt :
+            answer[i] = answer[i] ** (sdt[s])
+        elif s == '*':
+            answer[i] = answer[i] * 2
+            if i != 0 :
+                answer[i-1] = answer[i-1] * 2
+        elif s == '#':
+            answer[i] = answer[i] * (-1)
+            
+    return sum(answer)
+  
+# re 활용
+import re
+def solution(dartResult):
+    bonus = {'S' : 1, 'D' : 2, 'T' : 3}
+    option = {'' : 1, '*' : 2, '#' : -1}
+    p = re.compile('(\d+)([SDT])([*#]?)')  #(모든 숫자), (SDT), (*#)가 0 또는 1인 경우
+    dart = p.findall(dartResult)  #ex) [('1', 'S', ''), ('2', 'D', '*'), ('3', 'T', '')]
+    
+    for i in range(len(dart)):
+        if dart[i][2] == '*' and i > 0:
+            dart[i-1] *= 2
+        dart[i] = int(dart[i][0]) ** bonus[dart[i][1]] * option[dart[i][2]]
+        
+    return sum(dart)
+```
+
+
+
+### Day17
+
+#### 로또의 최고 순위와 최저 순위
+
+- [입출력 예]
+
+  | lottos                | win_nums                 | result |
+  | --------------------- | ------------------------ | ------ |
+  | [44, 1, 0, 0, 31, 25] | [31, 10, 45, 1, 6, 19]   | [3, 5] |
+  | [0, 0, 0, 0, 0, 0]    | [38, 19, 20, 40, 15, 25] | [1, 6] |
+  | [45, 4, 35, 20, 3, 9] | [20, 9, 3, 45, 4, 35]    | [1, 1] |
+
+```python
+## Mine
+def solution(lottos, win_nums):
+    win = set(lottos)&set(win_nums)
+    minimum, maximum = 7-len(win), 7-len(win)-lottos.count(0)
+    return [min(6, maximum), min(6, minimum)]
+  
+  
+## Others
+def solution(lottos, win_nums):
+    rank=[6,6,5,4,3,2,1]
+    cnt_0 = lottos.count(0)
+    win = 0
+    for x in win_nums:
+        if x in lottos:
+            win += 1
+    return rank[cnt_0 + win],rank[win]
+```
+
+
+
+### Day18
+
+#### 푸드 파이트 대회
+
+```python
+## Mine
+def solution(food):
+    result = ''
+    for i, n in enumerate(food):
+        if i > 0: 
+          result += str(i)*(n//2)
+    return '0'.join([result, result[::-1]])
+
+                     
+## Others
+def solution(food):
+    answer = ''
+    for f in range(1, len(food)):
+        answer += str(f) * (food[f]//2) 
+    return answer + '0' + answer[::-1]
+```
+
+​     
+
+### Day19
+
+#### 체육복
+
+```python
+## Mine
+def solution(n, lost, reserve):
+    lost, reserve = set(lost)-set(reserve), set(reserve)-set(lost)
+    for i in reserve:
+        if i-1 in lost:
+            lost.remove(i-1)
+        elif i+1 in lost:
+            lost.remove(i+1)
+    return n-len(lost)
+  
+  
+## Others
+# lost를 기준으로
+def solution(n, lost, reserve):
+    lost, reserve = set(lost)-set(reserve), set(reserve)-set(lost)
+    for i in lost:
+        if i-1 in reserve:
+            reserve.remove(i-1)
+        elif i+1 in reserve:
+            reserve.remove(i+1)
+        else:  #위아래 번호에 여벌이 없으면 체육복 없음
+            n -= 1
+    return n
+```
+
+​     
+
+### Day20
+
+#### 완주하지 못한 선수
+
+- [문제 설명]
+
+  수많은 마라톤 선수들이 마라톤에 참여하였습니다. 단 한 명의 선수를 제외하고는 모든 선수가 마라톤을 완주하였습니다.
+
+  마라톤에 참여한 선수들의 이름이 담긴 배열 participant와 완주한 선수들의 이름이 담긴 배열 completion이 주어질 때, 완주하지 못한 선수의 이름을 return 하도록 solution 함수를 작성해주세요.
+
+- [제한 사항]
+
+  - 마라톤 경기에 참여한 선수의 수는 1명 이상 100,000명 이하입니다.
+  - completion의 길이는 participant의 길이보다 1 작습니다.
+  - 참가자의 이름은 1개 이상 20개 이하의 알파벳 소문자로 이루어져 있습니다.
+  - 참가자 중에는 동명이인이 있을 수 있습니다.
+
+- [입출력 예]
+
+  | participant                                       | completion                               | return   |
+  | ------------------------------------------------- | ---------------------------------------- | -------- |
+  | ["leo", "kiki", "eden"]                           | ["eden", "kiki"]                         | "leo"    |
+  | ["marina", "josipa", "nikola", "vinko", "filipa"] | ["josipa", "filipa", "marina", "nikola"] | "vinko"  |
+  | ["mislav", "stanko", "mislav", "ana"]             | ["stanko", "ana", "mislav"]              | "mislav" |
+
+```python
+## Mine
+from collections import Counter
+def solution(participant, completion):
+    answer = Counter(participant) - Counter(completion)
+    return list(answer.keys())[0]
+  
+
+## Others
+# 정렬을 통해 일치하지 않는 요소 찾기
+def solution(participant, completion):
+    participant.sort()
+    completion.sort()    
+    for i in range(len(completion)):
+        if participant[i] != completion[i]:
+            return participant[i]
+    return participant[-1]
+  
+# hash()
+def solution(participant, completion):
+    hash_dict, hash_sum = dict(), 0
+    
+    for part in participant:
+        hash_dict[hash(person)] = person
+        hash_sum += hash(person)
+        
+    for comp in completion:
+        hash_sum -= hash(person)
+        
+    return hash_dict[hash_sum]
+```
+
+   
+
+### Day21
+
+#### 가장 가까운 글자(#해시 #연결리스트)
+
+- [문제 설명]
+
+  문자열 `s`가 주어졌을 때, `s`의 각 위치마다 자신보다 앞에 나왔으면서, 자신과 가장 가까운 곳에 있는 같은 글자가 어디 있는지 알고 싶습니다.예를 들어, `s`="banana"라고 할 때, 각 글자들을 왼쪽부터 오른쪽으로 읽어 나가면서 다음과 같이 진행할 수 있습니다.
+
+  - b는 처음 나왔기 때문에 자신의 앞에 같은 글자가 없습니다. 이는 -1로 표현합니다.
+  - a는 처음 나왔기 때문에 자신의 앞에 같은 글자가 없습니다. 이는 -1로 표현합니다.
+  - n은 처음 나왔기 때문에 자신의 앞에 같은 글자가 없습니다. 이는 -1로 표현합니다.
+  - a는 자신보다 두 칸 앞에 a가 있습니다. 이는 2로 표현합니다.
+  - n도 자신보다 두 칸 앞에 n이 있습니다. 이는 2로 표현합니다.
+  - a는 자신보다 두 칸, 네 칸 앞에 a가 있습니다. 이 중 가까운 것은 두 칸 앞이고, 이는 2로 표현합니다.
+
+  따라서 최종 결과물은 [-1, -1, -1, 2, 2, 2]가 됩니다.
+
+  문자열 `s`이 주어질 때, 위와 같이 정의된 연산을 수행하는 함수 solution을 완성해주세요.
+
+- [제한 사항]
+
+  - 1 ≤ s의 길이 ≤ 10,000
+    - `s`은 영어 소문자로만 이루어져 있습니다.
+
+- [입출력 예]
+
+  | s        | result                  |
+  | -------- | ----------------------- |
+  | "banana" | [-1, -1, -1, 2, 2, 2]   |
+  | "foobar" | [-1, -1, 1, -1, -1, -1] |
+
+```python
+## Mine
+def solution(s):
+    words = {}
+    answer = []
+    for i, c in enumerate(s):
+        if c not in words:
+            answer.append(-1)
+        else:
+            answer.append(i-words[c])
+        words[c] = i
+    return answer
+# 중복된 문자열의 모든 인덱스를 담고 싶으면 if문은 words[c] = i, else문에는 words[c].append(i)
+  
+  
+## Others
+def solution(s):
+    answer = []
+    for i in range(len(s)):
+        j = s.find(s[i])
+        if i == j:
+            answer.append(-1)
+        else:
+            answer.append(i-j)
+            s = s.replace(s[j], ' ', 1)  #중복 문자의 인덱스를 찾기 위해 문자 삭제
+    return answer
+```
+
+
+
+### Day22
+
+#### 키패드 누르기
+
+- [문제 설명]
+
+  스마트폰 전화 키패드의 각 칸에 다음과 같이 숫자들이 적혀 있습니다.
+
+  ![https://grepp-programmers.s3.ap-northeast-2.amazonaws.com/files/production/4b69a271-5f4a-4bf4-9ebf-6ebed5a02d8d/kakao_phone1.png](https://grepp-programmers.s3.ap-northeast-2.amazonaws.com/files/production/4b69a271-5f4a-4bf4-9ebf-6ebed5a02d8d/kakao_phone1.png)
+
+  이 전화 키패드에서 왼손과 오른손의 엄지손가락만을 이용해서 숫자만을 입력하려고 합니다.맨 처음 왼손 엄지손가락은 `*` 키패드에 오른손 엄지손가락은 `#` 키패드 위치에서 시작하며, 엄지손가락을 사용하는 규칙은 다음과 같습니다.
+
+  1. 엄지손가락은 상하좌우 4가지 방향으로만 이동할 수 있으며 키패드 이동 한 칸은 거리로 1에 해당합니다.
+  2. 왼쪽 열의 3개의 숫자 `1`, `4`, `7`을 입력할 때는 왼손 엄지손가락을 사용합니다.
+  3. 오른쪽 열의 3개의 숫자 `3`, `6`, `9`를 입력할 때는 오른손 엄지손가락을 사용합니다.
+  4. 가운데 열의 4개의 숫자 `2`, `5`, `8`, `0`을 입력할 때는 두 엄지손가락의 현재 키패드의 위치에서 더 가까운 엄지손가락을 사용합니다.4-1. 만약 두 엄지손가락의 거리가 같다면, 오른손잡이는 오른손 엄지손가락, 왼손잡이는 왼손 엄지손가락을 사용합니다.
+
+  순서대로 누를 번호가 담긴 배열 numbers, 왼손잡이인지 오른손잡이인 지를 나타내는 문자열 hand가 매개변수로 주어질 때, 각 번호를 누른 엄지손가락이 왼손인 지 오른손인 지를 나타내는 연속된 문자열 형태로 return 하도록 solution 함수를 완성해주세요.
+
+- [제한 사항]
+
+  - numbers 배열의 크기는 1 이상 1,000 이하입니다.
+  - numbers 배열 원소의 값은 0 이상 9 이하인 정수입니다.
+  - hand는 "left" 또는 "right" 입니다.
+    - `"left"`는 왼손잡이, `"right"`는 오른손잡이를 의미합니다.
+  - 왼손 엄지손가락을 사용한 경우는 `L`, 오른손 엄지손가락을 사용한 경우는 `R`을 순서대로 이어붙여 문자열 형태로 return 해주세요.
+
+- [입출력 예]
+
+  | numbers                           | hand    | result        |
+  | --------------------------------- | ------- | ------------- |
+  | [1, 3, 4, 5, 8, 2, 1, 4, 5, 9, 5] | "right" | "LRLLLRLLRRL" |
+  | [7, 0, 8, 2, 8, 3, 1, 5, 7, 6, 2] | "left"  | "LRLLRRLLLRR" |
+  | [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]    | "right" | "LLRLLRLLRL"  |
+
+```python
+## Mine
+def solution(numbers, hand):
+    answer = ''
+    left = 10
+    right = 12
+    for n in numbers:
+        if n == 0:
+            n = 11
+        if n % 3 == 1:  #왼손라인
+            answer += 'L'
+            left = n
+        elif n % 3 == 0:  #오른손라인
+            answer += 'R'
+            right = n
+        else:  #중간라인
+            Ldist = abs(n-left)//3 + abs(n-left)%3
+            Rdist = abs(n-right)//3 + abs(n-right)%3
+					
+            if (Ldist < Rdist) or (Ldist == Rdist and hand == 'left'):  #왼손이 더 짧거나, 왼손잡이이고 거리가 동일할 때
+                answer += 'L'
+                left = n
+            else:  #오른손이 더 짧거나 거리가 동일하고 오른손잡이일 때
+                answer += 'R'
+                right = n
+    return answer
+```
+
+
+
+### Day23
+
+#### 크레인 인형뽑기 게임(#스택)
+
+- [문제 설명]
+
+  게임개발자인 "죠르디"는 크레인 인형뽑기 기계를 모바일 게임으로 만들려고 합니다."죠르디"는 게임의 재미를 높이기 위해 화면 구성과 규칙을 다음과 같이 게임 로직에 반영하려고 합니다.
+
+  ![https://grepp-programmers.s3.ap-northeast-2.amazonaws.com/files/production/69f1cd36-09f4-4435-8363-b71a650f7448/crane_game_101.png](https://grepp-programmers.s3.ap-northeast-2.amazonaws.com/files/production/69f1cd36-09f4-4435-8363-b71a650f7448/crane_game_101.png)
+
+  게임 화면은 **"1 x 1"** 크기의 칸들로 이루어진 **"N x N"** 크기의 정사각 격자이며 위쪽에는 크레인이 있고 오른쪽에는 바구니가 있습니다. (위 그림은 "5 x 5" 크기의 예시입니다). 각 격자 칸에는 다양한 인형이 들어 있으며 인형이 없는 칸은 빈칸입니다. 모든 인형은 "1 x 1" 크기의 격자 한 칸을 차지하며 **격자의 가장 아래 칸부터 차곡차곡 쌓여 있습니다.** 게임 사용자는 크레인을 좌우로 움직여서 멈춘 위치에서 가장 위에 있는 인형을 집어 올릴 수 있습니다. 집어 올린 인형은 바구니에 쌓이게 되는 데, 이때 바구니의 가장 아래 칸부터 인형이 순서대로 쌓이게 됩니다. 다음 그림은 [1번, 5번, 3번] 위치에서 순서대로 인형을 집어 올려 바구니에 담은 모습입니다.
+
+  ![https://grepp-programmers.s3.ap-northeast-2.amazonaws.com/files/production/638e2162-b1e4-4bbb-b0d7-62d31e97d75c/crane_game_102.png](https://grepp-programmers.s3.ap-northeast-2.amazonaws.com/files/production/638e2162-b1e4-4bbb-b0d7-62d31e97d75c/crane_game_102.png)
+
+  만약 같은 모양의 인형 두 개가 바구니에 연속해서 쌓이게 되면 두 인형은 터뜨려지면서 바구니에서 사라지게 됩니다. 위 상태에서 이어서 [5번] 위치에서 인형을 집어 바구니에 쌓으면 같은 모양 인형 **두 개**가 없어집니다.
+
+  ![https://grepp-programmers.s3.ap-northeast-2.amazonaws.com/files/production/8569d736-091e-4771-b2d3-7a6e95a20c22/crane_game_103.gif](https://grepp-programmers.s3.ap-northeast-2.amazonaws.com/files/production/8569d736-091e-4771-b2d3-7a6e95a20c22/crane_game_103.gif)
+
+  크레인 작동 시 인형이 집어지지 않는 경우는 없으나 만약 인형이 없는 곳에서 크레인을 작동시키는 경우에는 아무런 일도 일어나지 않습니다. 또한 바구니는 모든 인형이 들어갈 수 있을 만큼 충분히 크다고 가정합니다. (그림에서는 화면표시 제약으로 5칸만으로 표현하였음)
+
+  게임 화면의 격자의 상태가 담긴 2차원 배열 board와 인형을 집기 위해 크레인을 작동시킨 위치가 담긴 배열 moves가 매개변수로 주어질 때, 크레인을 모두 작동시킨 후 터트려져 사라진 인형의 개수를 return 하도록 solution 함수를 완성해주세요.
+
+- [제한 사항]
+
+  - board 배열은 2차원 배열로 크기는 "5 x 5" 이상 "30 x 30" 이하입니다.
+  - board의 각 칸에는 0 이상 100 이하인 정수가 담겨있습니다.
+    - 0은 빈 칸을 나타냅니다.
+    - 1 ~ 100의 각 숫자는 각기 다른 인형의 모양을 의미하며 같은 숫자는 같은 모양의 인형을 나타냅니다.
+  - moves 배열의 크기는 1 이상 1,000 이하입니다.
+  - moves 배열 각 원소들의 값은 1 이상이며 board 배열의 가로 크기 이하인 자연수입니다.
+
+- [입출력 예]
+
+  | board                                                        | moves             | result |
+  | ------------------------------------------------------------ | ----------------- | ------ |
+  | [[0,0,0,0,0],[0,0,1,0,3],[0,2,5,0,1],[4,2,4,4,2],[3,5,1,3,1]] | [1,5,3,5,1,2,1,4] | 4      |
+
+```python
+
+```
+
+
+
+### Day24
+
+#### 과일 장수
+
+- [문제 설명]
+
+  과일 장수가 사과 상자를 포장하고 있습니다. 사과는 상태에 따라 1점부터 k점까지의 점수로 분류하며, k점이 최상품의 사과이고 1점이 최하품의 사과입니다. 사과 한 상자의 가격은 다음과 같이 결정됩니다.
+
+  - 한 상자에 사과를 m개씩 담아 포장합니다.
+  - 상자에 담긴 사과 중 가장 낮은 점수가 p (1 ≤ p ≤ k)점인 경우, 사과 한 상자의 가격은 p * m 입니다.
+
+  과일 장수가 가능한 많은 사과를 팔았을 때, 얻을 수 있는 최대 이익을 계산하고자 합니다.(사과는 상자 단위로만 판매하며, 남는 사과는 버립니다)
+
+  예를 들어, `k` = 3, `m` = 4, 사과 7개의 점수가 [1, 2, 3, 1, 2, 3, 1]이라면, 다음과 같이 [2, 3, 2, 3]으로 구성된 사과 상자 1개를 만들어 판매하여 최대 이익을 얻을 수 있습니다.
+
+  - (최저 사과 점수) x (한 상자에 담긴 사과 개수) x (상자의 개수) = 2 x 4 x 1 = 8
+
+  사과의 최대 점수 `k`, 한 상자에 들어가는 사과의 수 `m`, 사과들의 점수 `score`가 주어졌을 때, 과일 장수가 얻을 수 있는 최대 이익을 return하는 solution 함수를 완성해주세요.
+
+- [제한 사항]
+
+  - 3 ≤ `k` ≤ 9
+
+  - 3 ≤ `m` ≤ 10
+
+  - 7 ≤ 
+
+    ```
+    score
+    ```
+
+    의 길이 ≤ 1,000,000
+
+    - 1 ≤ `score[i]` ≤ k
+
+  - 이익이 발생하지 않는 경우에는 0을 return 해주세요.
+
+- [입출력 예]
+
+  | k    | m    | score                                | result |
+  | ---- | ---- | ------------------------------------ | ------ |
+  | 3    | 4    | [1, 2, 3, 1, 2, 3, 1]                | 8      |
+  | 4    | 3    | [4, 1, 2, 2, 4, 4, 4, 4, 1, 2, 4, 2] | 33     |
+
+```python
+## Mine
+def solution(k, m, score):
+    answer = 0
+    score.sort(reverse=True)
+    for i in range(0, len(score), m):
+        box = score[i:i+m]
+        if len(box) == m:
+            answer += len(box)*min(box)
+    return answer
+  
+  
+## Others
+def solution(k, m, score):
+    answer = 0
+    score.sort(reverse=True)
+    for i in range(len(score)//m):
+        box = score[i*m:(i+1)*m]
+        answer += min(box) * m
+    return answer
+  
+  
+# 박스별 최솟값만 골라서 계산하기
+def solution(k, m, score):
+    return sum(sorted(score)[len(score)%m::m])*m  #slicing[start:end:step]
+```
+
+
+
+### Day25
+
+#### 숫자 짝꿍
+
+- [문제 설명]
+
+  두 정수 `X`, `Y`의 임의의 자리에서 공통으로 나타나는 정수 k(0 ≤ k ≤ 9)들을 이용하여 만들 수 있는 가장 큰 정수를 두 수의 짝꿍이라 합니다(단, 공통으로 나타나는 정수 중 서로 짝지을 수 있는 숫자만 사용합니다). `X`, `Y`의 짝꿍이 존재하지 않으면, 짝꿍은 -1입니다. `X`, `Y`의 짝꿍이 0으로만 구성되어 있다면, 짝꿍은 0입니다.
+
+  예를 들어, `X` = 3403이고 `Y` = 13203이라면, `X`와 `Y`의 짝꿍은 `X`와 `Y`에서 공통으로 나타나는 3, 0, 3으로 만들 수 있는 가장 큰 정수인 330입니다. 다른 예시로 `X` = 5525이고 `Y` = 1255이면 `X`와 `Y`의 짝꿍은 `X`와 `Y`에서 공통으로 나타나는 2, 5, 5로 만들 수 있는 가장 큰 정수인 552입니다(`X`에는 5가 3개, `Y`에는 5가 2개 나타나므로 남는 5 한 개는 짝 지을 수 없습니다.)두 정수 `X`, `Y`가 주어졌을 때, `X`, `Y`의 짝꿍을 return하는 solution 함수를 완성해주세요.
+
+- [제한 사항]
+
+  - 3 ≤ `X`, `Y`의 길이(자릿수) ≤ 3,000,000입니다.
+  - `X`, `Y`는 0으로 시작하지 않습니다.
+  - `X`, `Y`의 짝꿍은 상당히 큰 정수일 수 있으므로, 문자열로 반환합니다.
+
+- [입출력 예]
+
+  | X       | Y        | result |
+  | ------- | -------- | ------ |
+  | "100"   | "2345"   | "-1"   |
+  | "100"   | "203045" | "0"    |
+  | "100"   | "123450" | "10"   |
+  | "12321" | "42531"  | "321"  |
+  | "5525"  | "1255"   | "552"  |
+
+```python
+## Mine
+# 시간초과 문제 해결에 초점!
+def solution(X, Y):
+    answer = ''
+    for n in range(9, -1, -1):  #sort를 사용하지 않고 내림차순 정렬 가능
+        answer += str(n) * min(X.count(str(n)), Y.count(str(n)))
+
+    if answer == '':
+        return '-1'
+    elif answer[0] == '0':  #int(answer)==0과 같은 형변환은 시간 초과
+        return '0'
+    return answer
+  
+  
+## Others
+# list.count() 활용 -> 가장 속도 빠름!
+def solution(X, Y):
+    x_lst = [X.count(str(x))for x in range(10)]
+    y_lst = [Y.count(str(x))for x in range(10)]
+    answer = ''
+    for i in range(9, -1, -1):
+        answer += str(i) * min(x_lst[i], y_lst[i])
+        
+    if answer == '': return '-1'
+    if answer[0] == '0': return '0'
+    return answer
+  
+# Counter 활용1
+from collections import Counter
+def solution(X, Y):
+    X, Y = Counter(X), Counter(Y)
+    answer = ''
+    for i in range(9, -1, -1):
+        if str(i) in X and str(i) in Y:
+            answer += str(i)*min(X.get(str(i)), Y.get(str(i)))
+    if answer == '': 
+     	 return '-1'
+    if answer[0] == '0': 
+     	 return '0'
+    return answer
+  
+# Counter 활용2
+def solution(X, Y):
+    X, Y = Counter(X), Counter(Y)
+    answer = ''
+    for i in range(9, -1, -1):
+    		answer = ''.join([answer, str(i)*min(X[str(i)], Y[str(i)])])
+    if answer == '': 
+    		return "-1"
+    elif len(answer) == answer.count('0'): 
+    	  return '0'
+    return answer
+```
+
+​    
