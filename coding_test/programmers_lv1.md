@@ -1361,7 +1361,45 @@ def solution(numbers, hand):
   | [[0,0,0,0,0],[0,0,1,0,3],[0,2,5,0,1],[4,2,4,4,2],[3,5,1,3,1]] | [1,5,3,5,1,2,1,4] | 4      |
 
 ```python
+## Mine
+def solution(board, moves):
+    bucket = []
+    answer = 0
+    original_board = board.copy()
+    for i in range(len(original_board)):  #보드 시계방향 90도 회전
+        board[i] = []
+        for j in range(len(original_board)-1, -1, -1):
+            board[i].append(original_board[j][i])
+    for i in moves:  #인형뽑기
+        board[i-1] = list(filter(lambda x: x != 0, board[i-1]))
+        try:
+            pick = board[i-1].pop()
+        except:
+            continue
 
+        if bucket and pick == bucket[-1]:  #바구니에 넣기
+            bucket.pop()
+            answer += 2
+        else:
+            bucket.append(pick)
+    return answer
+  
+## Others
+def solution(board, moves):
+    answer = 0
+    basket = []
+    for move in moves:
+        for i in range(len(board)):  #인형뽑기
+            doll = board[i][move-1]            
+            if doll > 0:
+                board[i][move-1] = 0
+                break
+        if len(basket) > 0 and doll == basket[len(basket)-1]:  #바구니 넣기
+            basket.pop()
+            answer += 2
+        elif doll != 0:
+            basket.append(doll)
+    return answer
 ```
 
 
@@ -1391,18 +1429,11 @@ def solution(numbers, hand):
 
   - 3 ≤ `m` ≤ 10
 
-  - 7 ≤ 
-
-    ```
-    score
-    ```
-
-    의 길이 ≤ 1,000,000
-
+  - 7 ≤ `score`의 길이 ≤ 1,000,000
     - 1 ≤ `score[i]` ≤ k
-
+    
   - 이익이 발생하지 않는 경우에는 0을 return 해주세요.
-
+  
 - [입출력 예]
 
   | k    | m    | score                                | result |
@@ -1520,4 +1551,508 @@ def solution(X, Y):
     return answer
 ```
 
-​    
+
+
+### Day26
+
+#### 신규 아이디 추천(#정규식)
+
+- [문제 설명]
+
+  카카오에 입사한 신입 개발자 `네오`는 "카카오계정개발팀"에 배치되어, 카카오 서비스에 가입하는 유저들의 아이디를 생성하는 업무를 담당하게 되었습니다. "네오"에게 주어진 첫 업무는 새로 가입하는 유저들이 카카오 아이디 규칙에 맞지 않는 아이디를 입력했을 때, 입력된 아이디와 유사하면서 규칙에 맞는 아이디를 추천해주는 프로그램을 개발하는 것입니다.다음은 카카오 아이디의 규칙입니다.
+
+  - 아이디의 길이는 3자 이상 15자 이하여야 합니다.
+  - 아이디는 알파벳 소문자, 숫자, 빼기(-), 밑줄(_), 마침표(.) 문자만 사용할 수 있습니다.
+  - 단, 마침표(`.`)는 처음과 끝에 사용할 수 없으며 또한 연속으로 사용할 수 없습니다.
+
+  "네오"는 다음과 같이 7단계의 순차적인 처리 과정을 통해 신규 유저가 입력한 아이디가 카카오 아이디 규칙에 맞는 지 검사하고 규칙에 맞지 않은 경우 규칙에 맞는 새로운 아이디를 추천해 주려고 합니다.신규 유저가 입력한 아이디가 `new_id` 라고 한다면, 
+
+  1단계 new_id의 모든 대문자를 대응되는 소문자로 치환합니다.   
+
+  2단계 new_id에서 알파벳 소문자, 숫자, 빼기(-), 밑줄(_), 마침표(.)를 제외한 모든 문자를 제거합니다.   
+
+  3단계 new_id에서 마침표(.)가 2번 이상 연속된 부분을 하나의 마침표(.)로 치환합니다.   
+
+  4단계 new_id에서 마침표(.)가 처음이나 끝에 위치한다면 제거합니다.   
+
+  5단계 new_id가 빈 문자열이라면, new_id에 "a"를 대입합니다.   
+
+  6단계 new_id의 길이가 16자 이상이면, new_id의 첫 15개의 문자를 제외한 나머지 문자들을 모두 제거합니다.        만약 제거 후 마침표(.)가 new_id의 끝에 위치한다면 끝에 위치한 마침표(.) 문자를 제거합니다.   
+
+  7단계 new_id의 길이가 2자 이하라면, new_id의 마지막 문자를 new_id의 길이가 3이 될 때까지 반복해서 끝에 붙입니다.`
+
+  ------
+
+  예를 들어, new_id 값이 "...!@BaT#*..y.abcdefghijklm" 라면, 위 7단계를 거치고 나면 new_id는 아래와 같이 변경됩니다.
+
+  1단계 대문자 'B'와 'T'가 소문자 'b'와 't'로 바뀌었습니다.
+
+  `"...!@BaT#*..y.abcdefghijklm"` → `"...!@bat#*..y.abcdefghijklm"`
+
+  2단계 '!', '@', '#', '*' 문자가 제거되었습니다.
+
+  `"...!@bat#*..y.abcdefghijklm"` → `"...bat..y.abcdefghijklm"`
+
+  3단계 '...'와 '..' 가 '.'로 바뀌었습니다.
+
+  `"...bat..y.abcdefghijklm"` → `".bat.y.abcdefghijklm"`
+
+  4단계 아이디의 처음에 위치한 '.'가 제거되었습니다.
+
+  `".bat.y.abcdefghijklm"` → `"bat.y.abcdefghijklm"`
+
+  5단계 아이디가 빈 문자열이 아니므로 변화가 없습니다.
+
+  `"bat.y.abcdefghijklm"` → `"bat.y.abcdefghijklm"`
+
+  6단계 아이디의 길이가 16자 이상이므로, 처음 15자를 제외한 나머지 문자들이 제거되었습니다.
+
+  `"bat.y.abcdefghijklm"` → `"bat.y.abcdefghi"`
+
+  7단계 아이디의 길이가 2자 이하가 아니므로 변화가 없습니다.
+
+  `"bat.y.abcdefghi"` → `"bat.y.abcdefghi"`
+
+  따라서 신규 유저가 입력한 new_id가 "...!@BaT#*..y.abcdefghijklm"일 때, 네오의 프로그램이 추천하는 새로운 아이디는 "bat.y.abcdefghi" 입니다.
+
+- [문제]
+
+  신규 유저가 입력한 아이디를 나타내는 new_id가 매개변수로 주어질 때, "네오"가 설계한 7단계의 처리 과정을 거친 후의 추천 아이디를 return 하도록 solution 함수를 완성해 주세요.
+
+- [제한 사항]
+
+  new_id는 길이 1 이상 1,000 이하인 문자열입니다.
+
+  new_id는 알파벳 대문자, 알파벳 소문자, 숫자, 특수문자로 구성되어 있습니다.
+
+  new_id에 나타날 수 있는 특수문자는 `-_.~!@#$%^&*()=+[{]}:?,<>/`
+
+  로 한정됩니다.
+
+- [입출력 예]
+
+  | no   | new_id                        | result            |
+  | ---- | ----------------------------- | ----------------- |
+  | 예1  | "...!@BaT#*..y.abcdefghijklm" | "bat.y.abcdefghi" |
+  | 예2  | "z-+.^."                      | "z--"             |
+  | 예3  | "=.="                         | "aaa"             |
+  | 예4  | "123_.def"                    | "123_.def"        |
+  | 예5  | "abcdefghijklmn.p"            | "abcdefghijklmn"  |
+
+```python
+## Mine
+import re
+def solution(new_id):
+    new_id = new_id.lower()  #1단계
+    new_id = re.sub(r'[^a-z0-9-_.]','',new_id)  #2단계
+    new_id = re.sub('\.+', '.',new_id)  #3단계
+    new_id = new_id.strip('.')  #4단계
+    if new_id == '': new_id = 'a'  #5단계
+    if len(new_id) >= 16: new_id = new_id[:15].strip('.')  #6단계
+    if len(new_id) <= 2: new_id += new_id[-1]*(3-len(new_id))  #7단계
+    return new_id
+  
+  
+## Others
+# 3단계 정규식 다른 표현법
+new_id = re.sub(r'[.]+', '.', new_id)
+new_id = re.sub(r'(([.])\\2{1,})', '.', new_id)
+
+# 4단계 정규식 표현법
+new_id = re.sub('^\.|\.$', '', new_id)
+new_id = re.sub(r'^[.]|[.]$', '.', new_id)
+
+'''
+## 정규식 패턴 문자 
+- ^: 문자열의 시작 또는 not
+- $: 문자열의 끝
+- |: or
+- (): 정규식을 하나의 그룹으로 묶음
+- *: 0회 이상 반복되는 패턴 ex) a*: a가 0번 이상 반복되는 패턴
+- +: 1회 이상 반복되는 패턴 ex) a+: a가 1번 이상 반복되는 패턴
+- {n}: 문자가 n회 반복되는 패턴 ex) appl{3}e: appllle
+- {n,}: 문자가 n회 이상 반복되는 패턴 ex) appl{2,}e: applle, appllle, applllle, ...
+*정규식에서 패턴 문자를 문자열로 사용하고 싶을 경우 \를 사용하여 escape
+
+'''
+```
+
+
+
+### Day27
+
+#### 명예의 전당(1) (#heap)
+
+- [문제 설명]
+
+  "명예의 전당"이라는 TV 프로그램에서는 매일 1명의 가수가 노래를 부르고, 시청자들의 문자 투표수로 가수에게 점수를 부여합니다. 매일 출연한 가수의 점수가 지금까지 출연 가수들의 점수 중 상위 k번째 이내이면 해당 가수의 점수를 명예의 전당이라는 목록에 올려 기념합니다. 즉 프로그램 시작 이후 초기에 k일까지는 모든 출연 가수의 점수가 명예의 전당에 오르게 됩니다. k일 다음부터는 출연 가수의 점수가 기존의 명예의 전당 목록의 k번째 순위의 가수 점수보다 더 높으면, 출연 가수의 점수가 명예의 전당에 오르게 되고 기존의 k번째 순위의 점수는 명예의 전당에서 내려오게 됩니다.
+
+  이 프로그램에서는 매일 "명예의 전당"의 최하위 점수를 발표합니다. 예를 들어, `k` = 3이고, 7일 동안 진행된 가수의 점수가 [10, 100, 20, 150, 1, 100, 200]이라면, 명예의 전당에서 발표된 점수는 아래의 그림과 같이 [10, 10, 10, 20, 20, 100, 100]입니다.
+
+  ![https://grepp-programmers.s3.ap-northeast-2.amazonaws.com/files/production/b0893853-7471-47c0-b7e5-1e8b46002810/그림1.png](https://grepp-programmers.s3.ap-northeast-2.amazonaws.com/files/production/b0893853-7471-47c0-b7e5-1e8b46002810/%EA%B7%B8%EB%A6%BC1.png)
+
+  명예의 전당 목록의 점수의 개수 `k`, 1일부터 마지막 날까지 출연한 가수들의 점수인 `score`가 주어졌을 때, 매일 발표된 명예의 전당의 최하위 점수를 return하는 solution 함수를 완성해주세요.
+
+- [제한 사항]
+
+  - 3 ≤ `k` ≤ 100
+  - 7 ≤ `score`의 길이 ≤ 1,000
+    - 0 ≤ `score[i]` ≤ 2,000
+
+- [입출력 예]
+
+  | k    | score                                         | result                                 |
+  | ---- | --------------------------------------------- | -------------------------------------- |
+  | 3    | [10, 100, 20, 150, 1, 100, 200]               | [10, 10, 10, 20, 20, 100, 100]         |
+  | 4    | [0, 300, 40, 300, 20, 70, 150, 50, 500, 1000] | [0, 0, 0, 0, 20, 40, 70, 70, 150, 300] |
+
+- [힙 큐 알고리즘](https://docs.python.org/ko/3/library/heapq.html)
+
+  - 우선순위 큐 알고리즘
+  - heap: 최댓값 최솟값을 빠르게 찾아내는 연산. 완전 이진 트리
+    - 최대 힙 : 부모노드 >= 자식노드
+    - 최소 힙 : 부모노드 <= 자식노드
+    - 데이터 삽입: 왼쪽에서 오른쪽 순서로 밑에서부터 자리 채우기. 입력 데이터와 부모 노드 값을 비교하여 부모보다 작다면 자리 변경
+    - 데이터 삭제: 루트노드를 삭제하고, 트리 말단에서 가장 오른쪽 노드를 루트로 옮기고, 다시 루트 노드의 자식노드와 값을 비교하여 가장 작은 값과 위치 변경
+  - heapq: 최소 힙을 지원하는 모듈. 
+    - 부모노드 인덱스 = 자식노드 인덱스//2
+    - 왼쪽 자식노드 인덱스 = 부모노드 인덱스*2
+    - 오른쪽 자식노드 인덱스 = 부모노드 인덱스*2+1
+    - 최대 힙을 만들기 위해서는 입력 값을 음수로 변환
+
+- [ ] ```python
+  ## Mine
+  # 방법1
+  def solution(k, score):
+      hall, answer = [], []
+  		for i in score:
+  		    lowest = min(hall) if len(hall) else 0
+  		    if len(hall) < k:
+  		        hall.append(i)
+  		        answer.append(min(hall))
+  		    else:
+  		        if lowest >= i:
+  		            answer.append(lowest)
+  		        else:
+  		            hall.remove(lowest)
+  		            hall.append(i)
+  		            answer.append(min(hall))
+      return answer
+  
+  # 방법1 코드 수정
+  def solution(k, score):
+      hall, answer = [], []
+      for i in score:
+          hall.append(i)
+          if len(hall) > k:  #경우의 수 간소화
+          		hall.remove(min(hall))
+          answer.append(min(hall))
+      return answer
+  
+  # 방법2: 슬라이싱
+  def solution(k, score):
+      hall, answer = [], []
+      for i in score:
+          hall.append(i)
+          answer.append(sorted(hall, reverse=True)[:k][-1])
+      return answer
+    
+    
+  ## Others
+  # heapq 활용
+  import heapq
+  def solution(k, score):
+      answer, honor = [], []
+      heapify(honor)
+      for sc in score:
+          heappush(honor, sc)
+          if len(honor) > k:
+              heappop(honor)
+          answer.append(honor[0])
+      return answer
+  
+  # heapq로 최대 힙 구현
+  import heapq
+  def solution(k, score):
+      max_heap, answer = [], []
+  
+      for sc in score:
+          heapq.heappush(max_heap, (-sc, sc))  #최소힙 알고리즘을 최대힙으로 바꾸기 위해 음수화
+          answer.append(max(heapq.nsmallest(k, max_heap))[1])
+  
+      return answer
+    
+  '''
+  ## heap/heapq
+  - heap[0]은 가장 작은 요소
+  - heap.sort()로 heap 불변성 유지
+  - heap 생성: []로 초기화된 리스트를 사용 또는 heapify(리스트)로 리스트를 힙으로 변환
+  
+  # heapq.heappush(heap, item)
+  >>> heapq.heappush(h, 12)  # h = [12]
+  >>> heapq.heappush(h, 10)  # h = [10, 12]
+  >>> heapq.heappush(h, 5)   # h = [5, 12, 10]
+  >>> heapq.heappush(h, 8)   # h = [5, 8, 10, 12]
+  >>> heapq.heappush(h, 11)  # h = [5, 8, 10, 12, 11]
+  >>> heapq.heappush(h, 4).  # h = [4, 8, 5, 12, 11, 10]
+  
+  # heapq.heappop(heap)
+  >>> heapq.heappop(h)   #h = [5, 8, 10, 12, 11]
+  
+  # heapq.heappushpop(heap, item): heappush후 heappop을 수행하나 따로 하는 것보다 효율적
+  # heapq.nsmallest(n, heap, [key]): 힙에서 가장 작은 3개의 요소로 이루어진 것
+  '''
+  ```
+
+
+
+### Day28
+
+#### 기사단원의 무기 (#약수의 개수)
+
+- [문제 설명]
+
+  숫자나라 기사단의 각 기사에게는 1번부터 `number`까지 번호가 지정되어 있습니다. 기사들은 무기점에서 무기를 구매하려고 합니다.
+
+  각 기사는 자신의 기사 번호의 약수 개수에 해당하는 공격력을 가진 무기를 구매하려 합니다. 단, 이웃나라와의 협약에 의해 공격력의 제한수치를 정하고, 제한수치보다 큰 공격력을 가진 무기를 구매해야 하는 기사는 협약기관에서 정한 공격력을 가지는 무기를 구매해야 합니다.
+
+  예를 들어, 15번으로 지정된 기사단원은 15의 약수가 1, 3, 5, 15로 4개 이므로, 공격력이 4인 무기를 구매합니다. 만약, 이웃나라와의 협약으로 정해진 공격력의 제한수치가 3이고 제한수치를 초과한 기사가 사용할 무기의 공격력이 2라면, 15번으로 지정된 기사단원은 무기점에서 공격력이 2인 무기를 구매합니다. 무기를 만들 때, 무기의 공격력 1당 1kg의 철이 필요합니다. 그래서 무기점에서 무기를 모두 만들기 위해 필요한 철의 무게를 미리 계산하려 합니다.
+
+  기사단원의 수를 나타내는 정수 `number`와 이웃나라와 협약으로 정해진 공격력의 제한수치를 나타내는 정수 `limit`와 제한수치를 초과한 기사가 사용할 무기의 공격력을 나타내는 정수 `power`가 주어졌을 때, 무기점의 주인이 무기를 모두 만들기 위해 필요한 철의 무게를 return 하는 solution 함수를 완성하시오.
+
+- [제한 사항]
+
+  - 1 ≤ `number` ≤ 100,000
+  - 2 ≤ `limit` ≤ 100
+  - 1 ≤ `power` ≤ `limit`
+
+- [입출력 예]
+
+  | number | limit | power | result |
+  | ------ | ----- | ----- | ------ |
+  | 5      | 3     | 2     | 10     |
+  | 10     | 3     | 2     | 21     |
+
+```python
+## Mine
+def div(n):  #약수 카운팅 함수
+    cnt = 0
+    for i in range(1, int(n**0.5)+1):
+        if n%i == 0: 
+            cnt += 2
+    return cnt-1 if (n**0.5).is_integer() else cnt #제곱수는 약수 개수 홀수 개
+
+def solution(number, limit, power):
+    answer = [div(n) if div(n) <= limit else power for n in range(1, number+1)]
+    return sum(answer)
+  
+  
+# 약수의 개수를 구하는 방법의 시간초과 해결방법 
+# -> k의 약수는 k의 제곱근까지 약수쌍을 계산. 제곱수의 경우 약수의 개수가 홀수임을 활용하자!
+```
+
+
+
+### Day29
+
+#### 옹알이(2)
+
+- [문제 설명]
+
+  머쓱이는 태어난 지 11개월 된 조카를 돌보고 있습니다. 조카는 아직 "aya", "ye", "woo", "ma" 네 가지 발음과 네 가지 발음을 조합해서 만들 수 있는 발음밖에 하지 못하고 연속해서 같은 발음을 하는 것을 어려워합니다. 문자열 배열 `babbling` 이 매개변수로 주어질 때, 머쓱이의 조카가 발음할 수 있는 단어의 개수를 return하도록 solution 함수를 완성해주세요.
+
+- [제한 사항]
+
+  - 1 ≤ `babbling`의 길이 ≤ 100
+  - 1 ≤ `babbling[i]`의 길이 ≤ 30
+  - 문자열은 알파벳 소문자로만 이루어져 있습니다.
+
+- [입출력 예]
+
+  | babbling                                       | result |
+  | ---------------------------------------------- | ------ |
+  | ["aya", "yee", "u", "maa"]                     | 1      |
+  | ["ayaye", "uuu", "yeye", "yemawoo", "ayaayaa"] | 2      |
+
+```python
+## Mine
+def solution(babbling):
+    answer = 0
+    for bab in babbling:
+        for can in ["aya", "ye", "woo", "ma"]:
+            if can*2 not in bab:
+                bab = bab.replace(can, ' ')
+        if bab.strip() == '':
+            answer += 1
+    return answer
+```
+
+
+
+### Day30
+
+#### 성격 유형 검사하기
+
+- [문제 설명]
+
+  나만의 카카오 성격 유형 검사지를 만들려고 합니다.성격 유형 검사는 다음과 같은 4개 지표로 성격 유형을 구분합니다. 성격은 각 지표에서 두 유형 중 하나로 결정됩니다.
+
+  | 지표 번호 | 성격 유형              |
+  | --------- | ---------------------- |
+  | 1번 지표  | 라이언형(R), 튜브형(T) |
+  | 2번 지표  | 콘형(C), 프로도형(F)   |
+  | 3번 지표  | 제이지형(J), 무지형(M) |
+  | 4번 지표  | 어피치형(A), 네오형(N) |
+
+  4개의 지표가 있으므로 성격 유형은 총 16(=2 x 2 x 2 x 2)가지가 나올 수 있습니다. 예를 들어, "RFMN"이나 "TCMA"와 같은 성격 유형이 있습니다.
+
+  검사지에는 총 `n`개의 질문이 있고, 각 질문에는 아래와 같은 7개의 선택지가 있습니다.
+
+  - `매우 비동의`
+  - `비동의`
+  - `약간 비동의`
+  - `모르겠음`
+  - `약간 동의`
+  - `동의`
+  - `매우 동의`
+
+  각 질문은 1가지 지표로 성격 유형 점수를 판단합니다.
+
+  예를 들어, 어떤 한 질문에서 4번 지표로 아래 표처럼 점수를 매길 수 있습니다.
+
+  | 선택지      | 성격 유형 점수                        |
+  | ----------- | ------------------------------------- |
+  | 매우 비동의 | 네오형 3점                            |
+  | 비동의      | 네오형 2점                            |
+  | 약간 비동의 | 네오형 1점                            |
+  | 모르겠음    | 어떤 성격 유형도 점수를 얻지 않습니다 |
+  | 약간 동의   | 어피치형 1점                          |
+  | 동의        | 어피치형 2점                          |
+  | 매우 동의   | 어피치형 3점                          |
+
+  이때 검사자가 질문에서 `약간 동의` 선택지를 선택할 경우 어피치형(A) 성격 유형 1점을 받게 됩니다. 만약 검사자가 `매우 비동의` 선택지를 선택할 경우 네오형(N) 성격 유형 3점을 받게 됩니다.
+
+  **위 예시처럼 네오형이 비동의, 어피치형이 동의인 경우만 주어지지 않고, 질문에 따라 네오형이 동의, 어피치형이 비동의인 경우도 주어질 수 있습니다.**하지만 각 선택지는 고정적인 크기의 점수를 가지고 있습니다.
+
+  - `매우 동의`나 `매우 비동의` 선택지를 선택하면 3점을 얻습니다.
+  - `동의`나 `비동의` 선택지를 선택하면 2점을 얻습니다.
+  - `약간 동의`나 `약간 비동의` 선택지를 선택하면 1점을 얻습니다.
+  - `모르겠음` 선택지를 선택하면 점수를 얻지 않습니다.
+
+  검사 결과는 모든 질문의 성격 유형 점수를 더하여 각 지표에서 더 높은 점수를 받은 성격 유형이 검사자의 성격 유형이라고 판단합니다. 단, 하나의 지표에서 각 성격 유형 점수가 같으면, 두 성격 유형 중 사전 순으로 빠른 성격 유형을 검사자의 성격 유형이라고 판단합니다.
+
+  질문마다 판단하는 지표를 담은 1차원 문자열 배열 `survey`와 검사자가 각 질문마다 선택한 선택지를 담은 1차원 정수 배열 `choices`가 매개변수로 주어집니다. 이때, 검사자의 성격 유형 검사 결과를 지표 번호 순서대로 return 하도록 solution 함수를 완성해주세요.
+
+- [제한 사항]
+
+  - 1 ≤ `survey`의 길이 ( = `n`) ≤ 1,000
+
+    - `survey`의 원소는 `"RT", "TR", "FC", "CF", "MJ", "JM", "AN", "NA"` 중 하나입니다.
+    - `survey[i]`의 첫 번째 캐릭터는 i+1번 질문의 비동의 관련 선택지를 선택하면 받는 성격 유형을 의미합니다.
+    - `survey[i]`의 두 번째 캐릭터는 i+1번 질문의 동의 관련 선택지를 선택하면 받는 성격 유형을 의미합니다.
+
+  - `choices`의 길이 = `survey`의 길이
+
+    - `choices[i]`는 검사자가 선택한 i+1번째 질문의 선택지를 의미합니다.
+    - 1 ≤ `choices`의 원소 ≤ 7
+
+    | choices | 뜻          |
+    | ------- | ----------- |
+    | 1       | 매우 비동의 |
+    | 2       | 비동의      |
+    | 3       | 약간 비동의 |
+    | 4       | 모르겠음    |
+    | 5       | 약간 동의   |
+    | 6       | 동의        |
+    | 7       | 매우 동의   |
+
+- [입출력 예]
+
+  | survey                         | choices         | result |
+  | ------------------------------ | --------------- | ------ |
+  | ["AN", "CF", "MJ", "RT", "NA"] | [5, 3, 2, 7, 5] | "TCMA" |
+  | ["TR", "RT", "TR"]             | [7, 1, 3]       | "RCJA" |
+
+```py
+## Mine
+def solution(survey, choices):
+    answer = ''
+    types = {"R":0,"T":0,"C":0,"F":0,"J":0,"M":0,"A":0,"N":0}
+
+    for i, n in enumerate(choices):
+        if n < 4:
+            types[survey[i][0]] += 4-n
+        if n > 4:
+            types[survey[i][1]] += n-4
+            
+    answer += 'R' if types['R'] >= types['T'] else 'T'
+    answer += 'C' if types['C'] >= types['F'] else 'F'
+    answer += 'J' if types['J'] >= types['M'] else 'M'
+    answer += 'A' if types['A'] >= types['N'] else 'N'
+    
+    return answer
+```
+
+
+
+### Day31
+
+#### 문자열 나누기
+
+- [문제 설명]
+
+  문자열 `s`가 입력되었을 때 다음 규칙을 따라서 이 문자열을 여러 문자열로 분해하려고 합니다.
+
+  - 먼저 첫 글자를 읽습니다. 이 글자를 x라고 합시다.
+  - 이제 이 문자열을 왼쪽에서 오른쪽으로 읽어나가면서, x와 x가 아닌 다른 글자들이 나온 횟수를 각각 셉니다. 처음으로 두 횟수가 같아지는 순간 멈추고, 지금까지 읽은 문자열을 분리합니다.
+  - `s`에서 분리한 문자열을 빼고 남은 부분에 대해서 이 과정을 반복합니다. 남은 부분이 없다면 종료합니다.
+  - 만약 두 횟수가 다른 상태에서 더 이상 읽을 글자가 없다면, 역시 지금까지 읽은 문자열을 분리하고, 종료합니다.
+
+  문자열 `s`가 매개변수로 주어질 때, 위 과정과 같이 문자열들로 분해하고, 분해한 문자열의 개수를 return 하는 함수 solution을 완성하세요.
+
+- [제한 사항]
+
+  - 1 ≤ `s`의 길이 ≤ 10,000
+  - `s`는 영어 소문자로만 이루어져 있습니다.
+
+- [입출력 예]
+
+  | s                | result |
+  | ---------------- | ------ |
+  | "banana"         | 3      |
+  | "abracadabra"    | 6      |
+  | "aaabbaccccabba" | 3      |
+
+```python
+## Mine
+def solution(s):
+    x, answer, cnt_x, cnt_y = '', 0, 0, 0
+    for i in s:
+        if cnt_x == cnt_y == 0:
+            x = i
+            cnt_x += 1
+        elif i == x: 
+          cnt_x += 1
+        else: 
+          cnt_y += 1
+
+        if cnt_x == cnt_y:
+            answer += 1
+            cnt_x, cnt_y = 0, 0
+            
+    return answer if cnt_x == cnt_y else answer + 1
+
+# 코드 간소화: 초기화 과정 없이도 구현 가능
+def solution(s):
+    answer, cnt_x, cnt_y = 0, 0, 0
+    for i in s:
+        if cnt_x == cnt_y:
+            answer += 1
+            x = i
+        if i == x:
+            cnt_x += 1
+        else:
+            cnt_y += 1
+    return answer
+```
+
