@@ -2056,3 +2056,213 @@ def solution(s):
     return answer
 ```
 
+​    
+
+### Day32
+
+#### 햄버거 만들기
+
+- [문제 설명]
+
+  햄버거 가게에서 일을 하는 상수는 햄버거를 포장하는 일을 합니다. 함께 일을 하는 다른 직원들이 햄버거에 들어갈 재료를 조리해 주면 조리된 순서대로 상수의 앞에 아래서부터 위로 쌓이게 되고, 상수는 순서에 맞게 쌓여서 완성된 햄버거를 따로 옮겨 포장을 하게 됩니다. 상수가 일하는 가게는 정해진 순서(아래서부터, 빵 – 야채 – 고기 - 빵)로 쌓인 햄버거만 포장을 합니다. 상수는 손이 굉장히 빠르기 때문에 상수가 포장하는 동안 속 재료가 추가적으로 들어오는 일은 없으며, 재료의 높이는 무시하여 재료가 높이 쌓여서 일이 힘들어지는 경우는 없습니다.
+
+  예를 들어, 상수의 앞에 쌓이는 재료의 순서가 [야채, 빵, 빵, 야채, 고기, 빵, 야채, 고기, 빵]일 때, 상수는 여섯 번째 재료가 쌓였을 때, 세 번째 재료부터 여섯 번째 재료를 이용하여 햄버거를 포장하고, 아홉 번째 재료가 쌓였을 때, 두 번째 재료와 일곱 번째 재료부터 아홉 번째 재료를 이용하여 햄버거를 포장합니다. 즉, 2개의 햄버거를 포장하게 됩니다.
+
+  상수에게 전해지는 재료의 정보를 나타내는 정수 배열 `ingredient`가 주어졌을 때, 상수가 포장하는 햄버거의 개수를 return 하도록 solution 함수를 완성하시오.
+
+- [제한 사항]
+
+  - 1 ≤ `ingredient`의 길이 ≤ 1,000,000
+  - `ingredient`의 원소는 1, 2, 3 중 하나의 값이며, 순서대로 빵, 야채, 고기를 의미합니다.
+
+- [입출력 예]
+
+  | ingredient                  | result |
+  | --------------------------- | ------ |
+  | [2, 1, 1, 2, 3, 1, 2, 3, 1] | 2      |
+  | [1, 3, 2, 1, 2, 1, 3, 1, 2] | 0      |
+
+```python
+## Mine
+def solution(ingredient):
+    answer = 0
+    burger = []
+    for i in ingredient:
+        burger.append(i)
+        if burger[-4:] == [1,2,3,1]:
+            answer += 1
+            del burger[-4:]
+    return answer
+  
+# 시간초과를 주의하자! (실패한 풀이)
+def solution(ingredient):
+    burger = ''
+    answer = 0
+    for i in ingredient:
+        burger += str(i)
+        if '1231' in burger:
+            burger = burger.replace('1231', '')
+            answer += 1
+    return answer
+  
+  
+## Others
+# while
+def solution(ingredient):
+    burger = []
+    answer = 0
+    for i in ingredient:
+        s.append(i)
+        while burger[-4:] == [1, 2, 3, 1]:
+            burger.pop()
+            burger.pop()
+            burger.pop()
+            burger.pop()
+            answer += 1
+    return answer
+
+# for문
+def solution(ingredient):
+    burger = []
+    answer = 0
+    for i in ingredient:
+        s.append(i)
+        if burger[-4:] == [1, 2, 3, 1]:
+            answer += 1
+            for _ in range(4):
+              	burger.pop()
+    return answer
+```
+
+   
+
+### Day33
+
+#### 신고 결과 받기
+
+- [문제 설명]
+
+  신입사원 무지는 게시판 불량 이용자를 신고하고 처리 결과를 메일로 발송하는 시스템을 개발하려 합니다. 무지가 개발하려는 시스템은 다음과 같습니다.
+
+  - 각 유저는 한 번에 한 명의 유저를 신고할 수 있습니다.
+    - 신고 횟수에 제한은 없습니다. 서로 다른 유저를 계속해서 신고할 수 있습니다.
+    - 한 유저를 여러 번 신고할 수도 있지만, 동일한 유저에 대한 신고 횟수는 1회로 처리됩니다.
+  - k번 이상 신고된 유저는 게시판 이용이 정지되며, 해당 유저를 신고한 모든 유저에게 정지 사실을 메일로 발송합니다.
+    - 유저가 신고한 모든 내용을 취합하여 마지막에 한꺼번에 게시판 이용 정지를 시키면서 정지 메일을 발송합니다.
+
+  다음은 전체 유저 목록이 ["muzi", "frodo", "apeach", "neo"]이고, k = 2(즉, 2번 이상 신고당하면 이용 정지)인 경우의 예시입니다.
+
+  | 유저 ID  | 유저가 신고한 ID | 설명                               |
+  | -------- | ---------------- | ---------------------------------- |
+  | "muzi"   | "frodo"          | "muzi"가 "frodo"를 신고했습니다.   |
+  | "apeach" | "frodo"          | "apeach"가 "frodo"를 신고했습니다. |
+  | "frodo"  | "neo"            | "frodo"가 "neo"를 신고했습니다.    |
+  | "muzi"   | "neo"            | "muzi"가 "neo"를 신고했습니다.     |
+  | "apeach" | "muzi"           | "apeach"가 "muzi"를 신고했습니다.  |
+
+  각 유저별로 신고당한 횟수는 다음과 같습니다.
+
+  | 유저 ID  | 신고당한 횟수 |
+  | -------- | ------------- |
+  | "muzi"   | 1             |
+  | "frodo"  | 2             |
+  | "apeach" | 0             |
+  | "neo"    | 2             |
+
+  위 예시에서는 2번 이상 신고당한 "frodo"와 "neo"의 게시판 이용이 정지됩니다. 이때, 각 유저별로 신고한 아이디와 정지된 아이디를 정리하면 다음과 같습니다.
+
+  | 유저 ID  | 유저가 신고한 ID  | 정지된 ID        |
+  | -------- | ----------------- | ---------------- |
+  | "muzi"   | ["frodo", "neo"]  | ["frodo", "neo"] |
+  | "frodo"  | ["neo"]           | ["neo"]          |
+  | "apeach" | ["muzi", "frodo"] | ["frodo"]        |
+  | "neo"    | 없음              | 없음             |
+
+  따라서 "muzi"는 처리 결과 메일을 2회, "frodo"와 "apeach"는 각각 처리 결과 메일을 1회 받게 됩니다.
+
+  이용자의 ID가 담긴 문자열 배열 `id_list`, 각 이용자가 신고한 이용자의 ID 정보가 담긴 문자열 배열 `report`, 정지 기준이 되는 신고 횟수 `k`가 매개변수로 주어질 때, 각 유저별로 처리 결과 메일을 받은 횟수를 배열에 담아 return 하도록 solution 함수를 완성해주세요.
+
+- [입출력 예]
+
+  | id_list                            | report                                                       | k    | result    |
+  | ---------------------------------- | ------------------------------------------------------------ | ---- | --------- |
+  | ["muzi", "frodo", "apeach", "neo"] | ["muzi frodo","apeach frodo","frodo neo","muzi neo","apeach muzi"] | 2    | [2,1,1,0] |
+  | ["con", "ryan"]                    | ["ryan con", "ryan con", "ryan con", "ryan con"]             | 3    | [0,0]     |
+
+```python
+## Mine
+def solution(id_list, report, k):
+    id_dict, answer = {}, []
+
+    for id in id_list:  #신고자: [신고당한 횟수, [신고한 사람 목록]]
+        id_dict[id] = [0, []]
+
+    for case in report:
+        id, reported = case.split()
+        if reported not in id_dict[id][1]:  #중복 신고가 아닐 때
+            id_dict[reported][0] += 1
+            id_dict[id][1].append(reported)
+    
+    banned = [i[0] for i in id_dict.items() if i[1][0] >= k]
+    
+    for case in id_dict.items():
+        case = case[1][1]
+        cnt = 0
+        for i in banned:
+            cnt += case.count(i)
+        answer.append(cnt)
+        
+    return answer
+# => 중복 신고 및 정지유저 카운팅 절차를 set을 사용하여 더 간소화하자!
+  
+## Others
+def solution(id_list, report, k):
+    answer = [0] * len(id_list)    
+    reports = {x : 0 for x in id_list}  #각 요소를 0으로 기본세팅하여 딕셔너리 생성
+
+    for r in set(report):  #중복 신고 방지
+        reports[r.split()[1]] += 1
+        
+    for r in set(report):
+        if reports[r.split()[1]] >= k:
+            answer[id_list.index(r.split()[0])] += 1
+            
+    return answer
+```
+
+​    
+
+### Day34
+
+#### 크기가 작은 부분문자열
+
+- [문제 설명]
+
+  숫자로 이루어진 문자열 `t`와 `p`가 주어질 때, `t`에서 `p`와 길이가 같은 부분문자열 중에서, 이 부분문자열이 나타내는 수가 `p`가 나타내는 수보다 작거나 같은 것이 나오는 횟수를 return하는 함수 solution을 완성하세요.
+
+  예를 들어, `t`="3141592"이고 `p`="271" 인 경우, `t`의 길이가 3인 부분 문자열은 314, 141, 415, 159, 592입니다. 이 문자열이 나타내는 수 중 271보다 작거나 같은 수는 141, 159 2개 입니다.
+
+- [제한 사항]
+
+  - 1 ≤ `p`의 길이 ≤ 18
+  - `p`의 길이 ≤ `t`의 길이 ≤ 10,000
+  - `t`와 `p`는 숫자로만 이루어진 문자열이며, 0으로 시작하지 않습니다.
+
+- [입출력 예]
+
+  | t              | p     | result |
+  | -------------- | ----- | ------ |
+  | "3141592"      | "271" | 2      |
+  | "500220839878" | "7"   | 8      |
+  | "10203"        | "15"  | 3      |
+
+```python
+## Mine
+def solution(t, p):
+    answer = 0
+    for i in range(len(t)-len(p)+1):
+        if int(t[i:i+len(p)]) <= int(p):
+            answer += 1
+    return answer
+```
+
